@@ -161,7 +161,7 @@
       db.from('products').select('id,name,seller_name,seller_id,price,category,stock,is_active,created_at').order('created_at', { ascending: false }).limit(300),
       db.from('orders').select('id,total_amount,status,created_at,buyer_id').order('created_at', { ascending: false }).limit(300),
       db.from('marketnest_reports').select('id,product_id,reporter_id,reason,status,created_at').order('created_at', { ascending: false }).limit(300),
-      db.from('reviews').select('id,product_id,buyer_id,rating,body,created_at').order('created_at', { ascending: false }).limit(300),
+      db.from('reviews').select('id,product_id,rating,body,created_at').order('created_at', { ascending: false }).limit(300),
       db.from('marketnest_profiles').select('user_id,email,display_name,account_type,suspended,created_at').order('created_at', { ascending: false }).limit(300),
       db.from('products').select('id', { count: 'exact', head: true }),
       db.from('marketnest_profiles').select('user_id', { count: 'exact', head: true }),
