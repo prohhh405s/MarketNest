@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MarketNest learning marketplace with Supabase seller authentication.">
+  <title>MarketNest — Seller Accounts</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="seller.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="MarketNest home">market<span>nest</span></a>
+    <div class="search-wrap">
+      <label class="sr-only" for="search">Search products</label>
+      <input id="search" type="search" placeholder="Search products, brands and more">
+      <button id="searchBtn" class="search-btn" aria-label="Search">⌕</button>
+    </div>
+    <button id="cartToggle" class="cart-button">🛒 Cart <span id="cartCount" class="count">0</span></button>
+  </header>
+  <nav class="subnav">
+    <span>☰ All</span><span>Electronics</span><span>Home</span><span>Fashion</span><span>Books</span><span class="demo-tag">SELLER ACCOUNTS TEST</span>
+  </nav>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">A MARKETPLACE STARTER</p>
+        <h1>Discover something<br><em>worth keeping.</em></h1>
+        <p class="hero-copy">Shop sample products and test real seller sign-in. Sample products are examples; seller listings are stored in your Supabase database.</p>
+        <a href="#products" class="hero-cta">Explore products ↓</a>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="package">MN</div><div class="orb orb-one"></div><div class="orb orb-two"></div></div>
+    </section>
+
+    <section class="section-head" id="products">
+      <div><p class="eyebrow">THE MARKETPLACE</p><h2>Popular picks</h2></div>
+      <select id="category" aria-label="Filter by category">
+        <option value="All">All categories</option><option>Electronics</option><option>Home</option><option>Fashion</option><option>Books</option>
+      </select>
+    </section>
+    <p id="resultInfo" class="muted"></p>
+    <section id="productGrid" class="product-grid" aria-live="polite"></section>
+
+    <section class="seller-panel" id="seller">
+      <div class="seller-intro">
+        <p class="eyebrow">SELLER STUDIO · ACCOUNT REQUIRED</p>
+        <h2>Open your seller studio.</h2>
+        <p>Create a seller account, sign in, and publish listings to the shared database. You can only manage listings owned by your account.</p>
+        <div class="seller-note">🔒 Database Row Level Security (RLS) protects listing ownership. This is a learning build, not ready for real orders or payments.</div>
+        <div id="accountStatus" class="account-status" role="status">Checking account setup…</div>
+      </div>
+
+      <div class="seller-workspace">
+        <section id="authPanel" class="auth-card">
+          <h3>Seller account</h3>
+          <p class="small-muted">Use an email you can access. Never use a password you use elsewhere.</p>
+          <form id="signupForm" class="seller-form">
+            <label>Shop name<input name="storeName" maxlength="60" required placeholder="e.g. BrightNest"></label>
+            <label>Email<input name="email" type="email" maxlength="254" required autocomplete="email" placeholder="you@example.com"></label>
+            <label>Password<input name="password" type="password" minlength="8" maxlength="72" required autocomplete="new-password" placeholder="At least 8 characters"></label>
+            <button class="primary-btn" type="submit">Create seller account</button>
+          </form>
+          <div class="auth-divider">Already registered?</div>
+          <form id="loginForm" class="seller-form">
+            <label>Email<input name="email" type="email" maxlength="254" required autocomplete="email" placeholder="you@example.com"></label>
+            <label>Password<input name="password" type="password" minlength="8" maxlength="72" required autocomplete="current-password" placeholder="Your password"></label>
+            <button class="secondary-btn" type="submit">Sign in</button>
+          </form>
+          <p id="authMessage" class="form-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="dashboard" class="auth-card" hidden>
+          <div class="dashboard-head">
+            <div><p class="eyebrow">SIGNED IN</p><h3 id="welcomeSeller">Seller dashboard</h3><p id="sellerEmail" class="small-muted"></p></div>
+            <button id="logoutBtn" class="secondary-btn" type="button">Sign out</button>
+          </div>
+          <form id="productForm" class="seller-form">
+            <label>Product name<input name="name" maxlength="80" required placeholder="e.g. Desk lamp"></label>
+            <div class="form-row">
+              <label>Price (₹)<input name="price" type="number" min="1" max="1000000" step="1" required placeholder="799"></label>
+              <label>Category<select name="category"><option>Electronics</option><option>Home</option><option>Fashion</option><option>Books</option></select></label>
+            </div>
+            <label>Emoji<input name="emoji" maxlength="8" value="📦" placeholder="📦"></label>
+            <button class="primary-btn" type="submit">＋ Publish listing</button>
+          </form>
+          <p id="productMessage" class="form-message" role="status" aria-live="polite"></p>
+          <h4 class="my-listings-heading">My listings</h4>
+          <div id="myListings" class="my-listings"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Shopping cart" aria-hidden="true">
+    <div class="drawer-head"><div><p class="eyebrow">YOUR BAG</p><h2>Shopping cart</h2></div><button id="closeCart" class="icon-button" aria-label="Close cart">✕</button></div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-bottom"><div class="total-line"><span>Demo subtotal</span><strong id="cartTotal">₹0</strong></div><button id="checkout" class="primary-btn full">Continue to demo checkout</button><p class="tiny">Demo only: no payment will be taken and no order will be placed.</p></div>
+  </aside>
+  <div id="overlay" class="overlay"></div>
+  <div id="toast" class="toast" role="status"></div>
+  <footer><a class="brand footer-brand" href="#">market<span>nest</span></a><p>Learning project · Not affiliated with Amazon · No real transactions</p><p>Local test build</p></footer>
+
+  <!-- The publishable/anon key is designed for browser use. Never put a service_role/secret key here. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
