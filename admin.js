@@ -183,12 +183,15 @@
     $('navOrderCount').textContent = queries[7].error ? '—' : Number(queries[7].count || 0).toLocaleString('en-IN');
     $('navReportCount').textContent = queries[8].error ? '—' : Number(queries[8].count || 0).toLocaleString('en-IN');
 
-    var failures = [
-      loadingOrError(queries[0], 'Products'), loadingOrError(queries[1], 'Orders'),
-      loadingOrError(queries[2], 'Reports'), loadingOrError(queries[3], 'Reviews'),
-      loadingOrError(queries[4], 'User profiles')
-    ].filter(Boolean);
-    if (failures.length) notify('Some data could not be loaded. ' + failures.length + ' section(s) need their Supabase schema and RLS permissions checked.', true);
+    var queryLabels = ['Products', 'Orders', 'Reports', 'Reviews', 'User profiles', 'Product count', 'User count', 'Order count', 'Open report count'];
+    var failures = queries.map(function (result, index) {
+      if (!result.error) return null;
+      return queryLabels[index] + ': ' + (result.error.message || 'Unknown Supabase error') +
+        (result.error.code ? ' [code ' + result.error.code + ']' : '');
+    }).filter(Boolean);
+    if (failures.length) {
+      notify('Some data could not be loaded. Details: ' + failures.join(' | '), true);
+    }
 
     renderOverview();
     renderProducts();

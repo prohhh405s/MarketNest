@@ -286,3 +286,7 @@ dialog[open] .dlg-media img { animation:mn-image-enter .4s var(--mn-ease) both; 
   .product-card .price-row { align-items:stretch; flex-direction:column; gap:8px; }
   .product-card .add-btn { width:100%; }
 }
+
+/* The legacy moderation panel is reserved for the separately authenticated admin control room. */
+#features .mn-feature-tabs [data-tab="admin"],
+#features .mn-feature-card[data-panel="admin"] { display:none !important; }
