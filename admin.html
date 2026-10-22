@@ -87,7 +87,16 @@
           <div class="panel-card"><div class="panel-heading"><div><h2>Review moderation</h2><p>Public product reviews. Removal is permanent and requires confirmation.</p></div></div><div id="reviewsTable" class="table-wrap"><div class="loading-row">Loading reviews…</div></div></div>
         </section>
         <section class="view-panel" data-panel="users" hidden>
-          <div class="panel-card"><div class="panel-heading"><div><h2>Account management</h2><p>Suspend or restore marketplace activity. This does not delete Supabase Auth identities.</p></div><div class="table-tools"><input id="userSearch" type="search" placeholder="Search accounts…" aria-label="Search accounts"></div></div><div id="usersTable" class="table-wrap"><div class="loading-row">Loading accounts…</div></div></div>
+          <div class="panel-card"><div class="panel-heading"><div><h2>Account management</h2><p>Create accounts, set passwords, grant admin access, or permanently delete accounts.</p></div><div class="table-tools"><input id="userSearch" type="search" placeholder="Search accounts…" aria-label="Search accounts"></div></div>
+          <form id="createManagedUserForm" class="user-create-form">
+            <label>Name<input name="displayName" required maxlength="60" placeholder="Full name or shop name"></label>
+            <label>Email<input name="email" type="email" required maxlength="254" placeholder="user@example.com"></label>
+            <label>Password<input name="password" type="password" required minlength="8" maxlength="72" autocomplete="new-password" placeholder="At least 8 characters"></label>
+            <label>Account type<select name="accountType"><option value="customer">Buyer</option><option value="seller">Seller</option><option value="admin">Admin</option></select></label>
+            <button class="btn btn-primary" type="submit" id="createManagedUserBtn">Create account</button>
+            <p class="small-muted">Admin-created accounts are marked email-confirmed. Only use this for accounts you are authorized to create.</p>
+          </form>
+          <div id="usersTable" class="table-wrap"><div class="loading-row">Loading accounts…</div></div></div>
         </section>
         <footer class="main-footer"><span>MarketNest Control Room</span><span>Private admin surface · Data protected by Supabase RLS</span></footer>
       </div>
