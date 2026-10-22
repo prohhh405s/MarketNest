@@ -161,7 +161,7 @@
       db.from('products').select('id,name,seller_name,seller_id,price,category,stock,is_active,created_at').order('created_at', { ascending: false }).limit(300),
       db.from('orders').select('id,total_amount,status,created_at,buyer_id').order('created_at', { ascending: false }).limit(300),
       db.from('marketnest_reports').select('id,product_id,reporter_id,reason,status,created_at').order('created_at', { ascending: false }).limit(300),
-      db.from('reviews').select('id,product_id,buyer_id,rating,body,created_at').order('created_at', { ascending: false }).limit(300),
+      db.from('reviews').select('id,product_id,rating,body,created_at').order('created_at', { ascending: false }).limit(300),
       db.from('marketnest_profiles').select('user_id,email,display_name,account_type,suspended,created_at').order('created_at', { ascending: false }).limit(300),
       db.from('products').select('id', { count: 'exact', head: true }),
       db.from('marketnest_profiles').select('user_id', { count: 'exact', head: true }),
@@ -257,10 +257,10 @@
     var rows = state.reviews.map(function (r) {
       var stars = '★'.repeat(Math.max(0, Math.min(5, Number(r.rating) || 0))) + '☆'.repeat(5 - Math.max(0, Math.min(5, Number(r.rating) || 0)));
       return '<tr><td><span class="primary-cell">' + esc(stars) + '</span><span class="secondary-cell">Product #' + esc(shortId(r.product_id)) + '</span></td>' +
-        '<td><span class="primary-cell">' + esc(r.body || 'Rating only') + '</span></td><td>' + esc(shortId(r.buyer_id)) + '</td><td>' + esc(date(r.created_at)) + '</td>' +
+        '<td><span class="primary-cell">' + esc(r.body || 'Rating only') + '</span></td><td>' + 'Verified buyer</td><td>' + esc(date(r.created_at)) + '</td>' +
         '<td><button class="action-btn danger" data-review-delete="' + esc(r.id) + '">Remove</button></td></tr>';
     });
-    $('reviewsTable').innerHTML = table(['Rating / product', 'Review', 'Buyer ID', 'Date', 'Action'], rows, 'No reviews have been submitted.');
+    $('reviewsTable').innerHTML = table(['Rating / product', 'Review', 'Buyer', 'Date', 'Action'], rows, 'No reviews have been submitted.');
   }
 
   function renderUsers() {
