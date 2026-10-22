@@ -121,6 +121,22 @@ test('Admin console verifies server-side admin membership before loading data', 
   assert.ok(adminCss.includes('@media(max-width:760px)'));
 });
 
+
+test('Legacy admin controls are hidden from the public marketplace tools', () => {
+  const premiumCss = read('premium.css');
+  const featuresJs = read('features.js');
+  assert.ok(premiumCss.includes('#features .mn-feature-tabs [data-tab="admin"]'));
+  assert.ok(premiumCss.includes('#features .mn-feature-card[data-panel="admin"]'));
+  assert.ok(featuresJs.includes('data-tab="admin"'));
+});
+
+test('Admin dashboard reports the exact Supabase query that failed', () => {
+  const adminJs = read('admin.js');
+  assert.ok(adminJs.includes('queryLabels'));
+  assert.ok(adminJs.includes('result.error.message'));
+  assert.ok(adminJs.includes('result.error.code'));
+});
+
 let failures = 0;
 for (const check of checks) {
   if (check.ok) {
