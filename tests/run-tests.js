@@ -97,6 +97,30 @@ test('Input helper functions keep image and auth parsing checks available', () =
   }
 });
 
+
+test('Private admin console is not linked from public storefront navigation', () => {
+  const adminHtml = read('admin.html');
+  assert.ok(!html.includes('href="admin.html"'), 'Public storefront should not link to the admin route');
+  assert.ok(adminHtml.includes('name="robots" content="noindex,nofollow,noarchive"'));
+  assert.ok(adminHtml.includes('id="adminLogin"'));
+});
+
+test('Admin console verifies server-side admin membership before loading data', () => {
+  const adminJs = read('admin.js');
+  const adminCss = read('admin.css');
+  assert.ok(adminJs.includes("db.rpc('marketnest_is_admin')"));
+  assert.ok(adminJs.includes('async function ensureAdmin()'));
+  assert.ok(adminJs.includes('await ensureAdmin()'));
+  assert.ok(adminJs.includes("signInWithPassword"));
+  assert.ok(!adminJs.includes('signUp('), 'Admin console must not offer public signup');
+  assert.ok(adminJs.includes('data-product-toggle'));
+  assert.ok(adminJs.includes('data-report-save'));
+  assert.ok(adminJs.includes('data-review-delete'));
+  assert.ok(adminJs.includes('data-user-toggle'));
+  assert.ok(adminCss.includes('.sidebar'));
+  assert.ok(adminCss.includes('@media(max-width:760px)'));
+});
+
 let failures = 0;
 for (const check of checks) {
   if (check.ok) {
