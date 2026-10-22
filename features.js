@@ -67,7 +67,7 @@
               aria-selected="false">Notifications</button>
       <button type="button" data-tab="reports" role="tab"
               aria-selected="false">Report listing</button>
-      <button type="button" data-tab="admin" role="tab"
+      <button type="button" data-tab="admin" role="tab" hidden
               aria-selected="false">Admin</button>
     </div>
 
@@ -213,7 +213,7 @@
         <div id="mnMyReports" class="mn-list"></div>
       </section>
 
-      <section class="mn-feature-card" data-panel="admin">
+      <section class="mn-feature-card" data-panel="admin" hidden>
         <h3>Admin moderation</h3>
         <p class="mn-note">
           Admin access must be granted by the project owner using
@@ -268,12 +268,23 @@
     return '<p class="mn-note">' + safe(msg) + '</p>';
   }
 
+  function updateAdminVisibility() {
+    var tab = panel.querySelector('[data-tab="admin"]');
+    var card = panel.querySelector('[data-panel="admin"]');
+    if (tab) tab.hidden = !isAdmin;
+    if (card) card.hidden = !isAdmin;
+    if (!isAdmin && activeTab === 'admin') switchTab('orders');
+  }
+
   function switchTab(tab) {
+    if (tab === 'admin' && !isAdmin) return;
     activeTab = tab;
     panel.querySelectorAll('[data-panel]').forEach(function (el) {
+      if (el.dataset.panel === 'admin') el.hidden = !isAdmin;
       el.classList.toggle('mn-hidden', el.dataset.panel !== tab);
     });
     panel.querySelectorAll('[data-tab]').forEach(function (el) {
+      el.hidden = el.dataset.tab === 'admin' && !isAdmin;
       el.setAttribute(
         'aria-selected',
         String(el.dataset.tab === tab)
@@ -1620,6 +1631,7 @@
       : null;
 
     isAdmin = false;
+    updateAdminVisibility();
 
     $('mnAccount').textContent = user
       ? 'Signed in as ' + (user.email || user.id) +
@@ -1653,7 +1665,14 @@
 
     await loadProducts();
 
-    if (activeTab === 'admin') await loadAdmin();
+    // Determine admin-only navigation from the server-side membership RPC.
+    try {
+      await checkAdmin();
+    } catch (e) {
+      isAdmin = false;
+    }
+    updateAdminVisibility();
+    if (activeTab === 'admin' && isAdmin) await loadAdmin();
   }
 
   document.addEventListener('marketnest-auth-changed', function (e) {
