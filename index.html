@@ -110,6 +110,8 @@
             </fieldset>
             <label><span id="nameLabel">Your name</span><input name="storeName" maxlength="60" required autocomplete="name" placeholder="e.g. Aarav"></label>
             <label>Email<input name="email" type="email" maxlength="254" required autocomplete="email" placeholder="you@example.com"></label>
+            <label id="sellerPhoneField" hidden>Seller contact phone<input name="sellerPhone" type="tel" inputmode="tel" maxlength="20" autocomplete="tel" placeholder="e.g. +91 98765 43210" aria-describedby="sellerPhoneHint"></label>
+            <p id="sellerPhoneHint" class="small-muted" hidden>Required for seller contact only. No OTP or phone verification is used.</p>
             <label>Password<input name="password" type="password" maxlength="72" required autocomplete="new-password" placeholder="8+ characters, letters and numbers" aria-describedby="pwHint"></label>
             <p id="pwHint" class="small-muted">Use at least 8 characters with a letter and a number. Don't reuse a password from another site.</p>
             <button class="primary-btn" type="submit">Create seller account</button>
