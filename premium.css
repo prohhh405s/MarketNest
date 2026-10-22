@@ -287,6 +287,6 @@ dialog[open] .dlg-media img { animation:mn-image-enter .4s var(--mn-ease) both; 
   .product-card .add-btn { width:100%; }
 }
 
-/* The legacy moderation panel is reserved for the separately authenticated admin control room. */
-#features .mn-feature-tabs [data-tab="admin"],
-#features .mn-feature-card[data-panel="admin"] { display:none !important; }
+/* Admin navigation is shown only after the server-side membership check. */
+#features .mn-feature-tabs [data-tab="admin"][hidden],
+#features .mn-feature-card[data-panel="admin"][hidden] { display:none !important; }
