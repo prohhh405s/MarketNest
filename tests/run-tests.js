@@ -129,6 +129,16 @@ test('Admin console verifies server-side admin membership before loading data', 
 });
 
 
+test('Marketplace admin tab is hidden by default and shown only after server-side authorization', () => {
+  const featuresJs = read('features.js');
+  const premiumCss = read('premium.css');
+  assert.ok(featuresJs.includes('data-tab="admin" role="tab" hidden'));
+  assert.ok(featuresJs.includes('data-panel="admin" hidden'));
+  assert.ok(featuresJs.includes("await checkAdmin()"));
+  assert.ok(featuresJs.includes("tab.hidden = !isAdmin"));
+  assert.ok(premiumCss.includes('[data-tab="admin"][hidden]'));
+});
+
 test('Legacy admin controls are hidden from public marketplace tools', () => {
   const premiumCss = read('premium.css');
   const featuresJs = read('features.js');
