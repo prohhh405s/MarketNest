@@ -258,6 +258,7 @@
   function setSignedInUI(user) {
     var changed = (currentUser && currentUser.id) !== (user && user.id);
     currentUser = user || null;
+    renderAdminControlLink(currentUser);
     var show = !!currentUser && !recoveryMode;
     var meta = (currentUser && currentUser.user_metadata) || {};
     var customer = meta.account_type === "customer";   // accounts made before v3 have no type and count as sellers
@@ -573,6 +574,29 @@
   });
 
   /* ---------- account sidebar ---------- */
+  async function renderAdminControlLink(user) {
+    var body = $("accountDrawerBody");
+    var existing = $("adminControlRoomLink");
+    if (existing) existing.remove();
+    if (!body || !db || !user || recoveryMode) return;
+    try {
+      var result = await db.rpc("marketnest_is_admin");
+      // A stale permission response must never add a link for a different signed-in user.
+      if (!result.error && result.data === true && currentUser && currentUser.id === user.id && !recoveryMode) {
+        var button = document.createElement("button");
+        button.type = "button";
+        button.id = "adminControlRoomLink";
+        button.className = "primary-btn full";
+        button.textContent = "Open Admin Control Room ↗";
+        button.addEventListener("click", function () {
+          window.location.href = new URL("admin.html", window.location.href).href;
+        });
+        body.insertBefore(button, accountWorkspace || body.firstChild);
+      }
+    } catch (error) {
+      console.warn("Could not verify admin control-room link:", error && error.message ? error.message : error);
+    }
+  }
   var accountDrawer = $("accountDrawer");
   var accountToggle = $("accountToggle");
   var accountOverlay = $("accountOverlay");
