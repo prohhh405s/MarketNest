@@ -105,6 +105,13 @@ test('Private admin console is not linked from public storefront navigation', ()
   assert.ok(adminHtml.includes('id="adminLogin"'));
 });
 
+test('Storefront checks server-side admin membership and redirects authorized admins after sign-in', () => {
+  assert.ok(app.includes('db.rpc("marketnest_is_admin")'));
+  assert.ok(app.includes('adminResult.data === true'));
+  assert.ok(app.includes('window.location.replace(new URL("admin.html"'));
+  assert.ok(app.includes('currentUser.id === signedInId'));
+});
+
 test('Admin console verifies server-side admin membership before loading data', () => {
   const adminJs = read('admin.js');
   const adminCss = read('admin.css');
