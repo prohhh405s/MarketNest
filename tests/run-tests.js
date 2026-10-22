@@ -83,7 +83,8 @@ test('Storage migration scopes uploads to the authenticated owner folder', () =>
 });
 
 test('Marketplace SQL contains RLS and server-side order validation', () => {
-  assert.ok(marketplaceSql.includes('alter table public.products enable row level security'));
+  assert.ok(marketplaceSql.includes('alter table public.orders enable row level security'));
+  assert.ok(marketplaceSql.includes('alter table public.order_items enable row level security'));
   assert.ok(marketplaceSql.includes('create or replace function public.marketnest_place_order'));
   assert.ok(marketplaceSql.includes('for update'));
   assert.ok(marketplaceSql.includes('marketnest_is_suspended'));
