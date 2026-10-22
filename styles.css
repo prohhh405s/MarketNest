@@ -102,3 +102,72 @@ footer{padding:26px clamp(16px,5vw,72px);display:flex;align-items:center;gap:22p
 /* The account workspace now lives in the drawer, so keep the public intro balanced. */
 .seller-panel{grid-template-columns:minmax(0,1fr);max-width:900px;margin-inline:auto}
 .seller-intro{max-width:680px}
+
+
+/* Premium cyan polish: storefront, account drawer and Buy/Sell hero */
+:root{
+  --ink:#eaf8ff;
+  --muted:#9db6c7;
+  --paper:#080f16;
+  --line:#203545;
+  --green:#b8ff68;
+  --darkgreen:#063e42;
+  --accent:#24d9d0;
+  --premium-cyan:#54f3ed;
+  --orange:#f2b36d;
+  --shadow:0 18px 48px #0008;
+}
+body{background:#080f16;color:#eaf8ff}
+a{color:#8cefeb}
+.eyebrow,.hero .eyebrow,.seller-intro .eyebrow{color:var(--premium-cyan);letter-spacing:.14em}
+h1,h2,h3,h4,.hero h1,.seller-intro h2{color:#f3fbff}
+p,.small-muted,.hero-copy{color:#a8c2d2}
+.ghost-link,.account-toggle{color:#c5f7f5}
+.ghost-link:hover,.account-toggle:hover,a:hover{color:var(--premium-cyan)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--premium-cyan);outline-offset:3px}
+.hero,.seller-panel,.product-card,.feature-card,.auth-card,.account-drawer{
+  background:linear-gradient(145deg,#111e29 0%,#0b141d 100%);
+  border-color:#263e50;
+  color:#eaf8ff;
+}
+.hero{position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(220px,.85fr);align-items:center;gap:clamp(24px,5vw,64px);padding:clamp(28px,5vw,64px);min-height:360px;overflow:hidden}
+.hero-copy{max-width:56ch;line-height:1.8}
+.hero-art{position:relative;justify-self:end;width:min(100%,390px);min-height:250px;display:grid;place-items:center}
+.hero-cta,.primary-btn{background:linear-gradient(100deg,#baff6b,#66f1df);color:#071318;border:1px solid #8effd9;font-weight:800;box-shadow:0 8px 28px #42e7d326}
+.hero-cta:hover,.primary-btn:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.account-drawer{
+  position:fixed;z-index:41;top:0;right:0;bottom:0;width:min(520px,94vw);
+  padding:24px;overflow-y:auto;overscroll-behavior:contain;
+  border:0;border-left:1px solid #2a5362;border-radius:0;
+  background:linear-gradient(155deg,#101e2a,#080f16 72%);
+  box-shadow:-24px 0 70px #0008;color:#eaf8ff;
+  transform:translateX(105%);visibility:hidden;transition:transform .24s ease,visibility .24s;
+}
+.account-drawer.open{transform:translateX(0);visibility:visible}
+.account-drawer .drawer-head{position:sticky;top:-24px;z-index:2;margin:-24px -24px 22px;padding:20px 24px 18px;background:#0d1822f5;border-bottom:1px solid #294251}
+.account-drawer .drawer-head h2{color:#effcff}
+.account-drawer .drawer-head .eyebrow{color:var(--premium-cyan)}
+.account-drawer .icon-button{background:#172936;color:#e9ffff;border:1px solid #315263}
+.account-drawer-body .seller-workspace{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;width:100%;min-width:0}
+.account-drawer-body .seller-intro{display:none}
+.account-drawer-body .auth-card,.account-drawer-body .dashboard-head,.account-drawer-body .seller-form,
+.account-drawer-body fieldset,.account-drawer-body .acct-type{
+  background:#101d28;color:#eaf8ff;border-color:#294251;
+}
+.account-drawer-body label,.account-drawer-body legend,.account-drawer-body h3,.account-drawer-body h4{color:#dffbff}
+.account-drawer-body input,.account-drawer-body select,.account-drawer-body textarea{
+  background:#071119;color:#ecfbff;border-color:#315063;
+}
+.account-drawer-body input::placeholder,.account-drawer-body textarea::placeholder{color:#8ba7b8}
+.account-drawer-body .small-muted,.account-drawer-body .form-message{color:#a7c5d5}
+.account-drawer-body .secondary-btn,.account-drawer-body .icon-button{background:#142735;color:#c6fbf7;border-color:#315063}
+.account-overlay{z-index:40;background:#02070dcc;backdrop-filter:blur(3px)}
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;gap:20px;min-height:0}
+  .hero-art{justify-self:center;width:min(100%,300px);min-height:180px}
+}
+@media(max-width:600px){
+  .account-drawer{width:100vw;padding:16px}
+  .account-drawer .drawer-head{top:-16px;margin:-16px -16px 16px;padding:16px}
+}
+@media(prefers-reduced-motion:reduce){.account-drawer,.account-overlay,.hero-cta,.primary-btn{transition:none}}
