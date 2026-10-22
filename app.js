@@ -274,20 +274,6 @@
       if (!currentUser) { saved = new Set(); savedOnly = false; updateSavedUI(); renderProducts(); }
       else if (show) {
         setTimeout(function () { loadSaved(); if (!customer) refreshMyListings(); }, 0); // setTimeout: never call Supabase inside its own auth callback
-        // Admin status is checked server-side; ordinary customers and sellers stay on the storefront.
-        var signedInId = currentUser.id;
-        setTimeout(async function () {
-          if (!db || recoveryMode || !currentUser || currentUser.id !== signedInId) return;
-          try {
-            var adminResult = await db.rpc("marketnest_is_admin");
-            if (!adminResult.error && adminResult.data === true &&
-                !recoveryMode && currentUser && currentUser.id === signedInId) {
-              window.location.replace(new URL("admin.html", window.location.href).href);
-            }
-          } catch (error) {
-            console.warn("Could not check admin redirect:", error && error.message ? error.message : error);
-          }
-        }, 0);
       }
     }
     if (document.dispatchEvent && typeof CustomEvent === "function") document.dispatchEvent(new CustomEvent("marketnest-auth-changed", { detail: { user: currentUser } }));
@@ -376,6 +362,19 @@
     setBusy(btn, false, "", "Sign in");
     if (r.error) return setMsg("authMessage", friendlyAuthError(r.error), true);
     f.reset(); setMsg("authMessage", ""); setSignedInUI(r.data.user);
+
+    // Redirect only after an explicit storefront sign-in, never when an existing
+    // session is restored while the admin visits the marketplace.
+    var signedInId = r.data.user && r.data.user.id;
+    try {
+      var adminResult = await db.rpc("marketnest_is_admin");
+      if (!adminResult.error && adminResult.data === true &&
+          !recoveryMode && currentUser && currentUser.id === signedInId) {
+        window.location.replace(new URL("admin.html", window.location.href).href);
+      }
+    } catch (error) {
+      console.warn("Could not check admin redirect:", error && error.message ? error.message : error);
+    }
   });
 
   var forgotCooldown = false;
