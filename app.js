@@ -566,6 +566,33 @@
     await loadProducts(); await refreshMyListings();
   });
 
+  /* ---------- account sidebar ---------- */
+  var accountDrawer = $("accountDrawer");
+  var accountToggle = $("accountToggle");
+  var accountOverlay = $("accountOverlay");
+  var accountWorkspace = document.querySelector(".seller-workspace");
+  // Keep the existing forms and their event handlers intact, but render them inside the slide-out account panel.
+  if (accountWorkspace) $("accountDrawerBody").appendChild(accountWorkspace);
+  function openAccount() {
+    lastFocus = document.activeElement;
+    accountDrawer.classList.add("open");
+    accountDrawer.setAttribute("aria-hidden", "false");
+    accountToggle.setAttribute("aria-expanded", "true");
+    accountOverlay.classList.add("show");
+    var firstInput = accountDrawer.querySelector("#loginForm input, #signupForm input, button");
+    if (firstInput) firstInput.focus();
+  }
+  function closeAccount() {
+    accountDrawer.classList.remove("open");
+    accountDrawer.setAttribute("aria-hidden", "true");
+    accountToggle.setAttribute("aria-expanded", "false");
+    accountOverlay.classList.remove("show");
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  accountToggle.addEventListener("click", openAccount);
+  $("closeAccount").addEventListener("click", closeAccount);
+  accountOverlay.addEventListener("click", closeAccount);
+
   /* ---------- page events ---------- */
   $("productGrid").addEventListener("click", function (e) {
     var v = e.target.closest("[data-view]"); if (v) return openDetails(v.dataset.view);
@@ -589,7 +616,7 @@
   $("dlgAdd").addEventListener("click", function () { if (activeProduct) addToCart(activeProduct.id); });
   $("productDialog").addEventListener("click", function (e) { if (e.target === e.currentTarget) e.currentTarget.close(); }); // click on backdrop
   $("productDialog").addEventListener("close", function () { if (lastFocus && lastFocus.focus) lastFocus.focus(); });
-  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeCart(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") { closeCart(); closeAccount(); } });
   $("checkout").addEventListener("click", function () {
     closeCart();
     var section = document.getElementById("features"); if (section) { section.scrollIntoView({ behavior: "smooth" }); var place = document.getElementById("mnPlaceOrder"); if (place) place.focus(); }
