@@ -576,23 +576,33 @@
   /* ---------- account sidebar ---------- */
   async function renderAdminControlLink(user) {
     var body = $("accountDrawerBody");
-    var existing = $("adminControlRoomLink");
-    if (existing) existing.remove();
+    function removeAdminControlLinks() {
+      document.querySelectorAll('[id="adminControlRoomLink"]').forEach(function (link) {
+        link.remove();
+      });
+    }
+
+    // Clean up any duplicates left by earlier renders or older cached scripts.
+    removeAdminControlLinks();
     if (!body || !db || !user || recoveryMode) return;
     try {
       var result = await db.rpc("marketnest_is_admin");
       // A stale permission response must never add a link for a different signed-in user.
-      if (!result.error && result.data === true && currentUser && currentUser.id === user.id && !recoveryMode) {
-        var button = document.createElement("button");
-        button.type = "button";
-        button.id = "adminControlRoomLink";
-        button.className = "primary-btn full";
-        button.textContent = "Open Admin Control Room ↗";
-        button.addEventListener("click", function () {
-          window.location.href = new URL("admin.html", window.location.href).href;
-        });
-        body.insertBefore(button, accountWorkspace || body.firstChild);
-      }
+      if (result.error || result.data !== true || !currentUser || currentUser.id !== user.id || recoveryMode) return;
+
+      // Auth events can trigger overlapping checks. Re-check and ensure there is only one button.
+      removeAdminControlLinks();
+      if (body.querySelector('[id="adminControlRoomLink"]')) return;
+
+      var button = document.createElement("button");
+      button.type = "button";
+      button.id = "adminControlRoomLink";
+      button.className = "primary-btn full";
+      button.textContent = "Open Admin Control Room ↗";
+      button.addEventListener("click", function () {
+        window.location.href = new URL("admin.html", window.location.href).href;
+      });
+      body.insertBefore(button, accountWorkspace || body.firstChild);
     } catch (error) {
       console.warn("Could not verify admin control-room link:", error && error.message ? error.message : error);
     }
