@@ -139,12 +139,14 @@ test('Marketplace admin tab is hidden by default and shown only after server-sid
   assert.ok(premiumCss.includes('[data-tab="admin"][hidden]'));
 });
 
-test('Legacy admin controls are hidden from public marketplace tools', () => {
+test('Legacy admin controls are hidden unless the signed-in user is authorized', () => {
   const premiumCss = read('premium.css');
   const featuresJs = read('features.js');
-  assert.ok(premiumCss.includes('#features .mn-feature-tabs [data-tab="admin"]'));
-  assert.ok(premiumCss.includes('#features .mn-feature-card[data-panel="admin"]'));
+  assert.ok(premiumCss.includes('[data-tab="admin"][hidden]'));
+  assert.ok(premiumCss.includes('[data-panel="admin"][hidden]'));
   assert.ok(featuresJs.includes('data-tab="admin"'));
+  assert.ok(featuresJs.includes('data-panel="admin"'));
+  assert.ok(featuresJs.includes('tab.hidden = !isAdmin'));
 });
 
 test('Admin dashboard identifies the Supabase query that failed', () => {
