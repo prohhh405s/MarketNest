@@ -50,6 +50,16 @@ test('Premium stylesheet is loaded after existing styles', () => {
   assert.ok(premiumCss.includes('@media (prefers-reduced-motion:reduce)'));
 });
 
+test('Account sign-in and selling tools are available in a responsive sidebar', () => {
+  assert.ok(html.includes('id="accountToggle"'));
+  assert.ok(html.includes('id="accountDrawer"'));
+  assert.ok(html.includes('id="accountDrawerBody"'));
+  assert.ok(app.includes('appendChild(accountWorkspace)'));
+  assert.ok(app.includes('function openAccount()'));
+  assert.ok(app.includes('function closeAccount()'));
+  assert.ok(read('styles.css').includes('.account-drawer.open'));
+});
+
 test('Core storefront, account and dialog hooks are present', () => {
   for (const id of ['searchForm', 'productGrid', 'category', 'sort', 'minPrice', 'maxPrice',
     'productDialog', 'cartDrawer', 'loginForm', 'signupForm', 'productForm', 'customerArea']) {
