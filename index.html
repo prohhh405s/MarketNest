@@ -26,10 +26,15 @@
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
       </button>
     </form>
-    <a class="ghost-link" href="#seller">Account &amp; selling</a>
+    <button class="ghost-link account-toggle" id="accountToggle" type="button" aria-controls="accountDrawer" aria-expanded="false">Account &amp; selling</button>
     <button id="savedToggle" class="cart-button" type="button" aria-pressed="false" aria-label="Show saved items">♡ <span class="cart-label">Saved</span> <span id="savedCount" class="count">0</span></button>
     <button id="cartToggle" class="cart-button" type="button" aria-label="Open demo cart">🛒 <span class="cart-label">Demo cart</span> <span id="cartCount" class="count">0</span></button>
   </header>
+  <aside class="account-drawer" id="accountDrawer" aria-label="Account and selling" aria-hidden="true">
+    <div class="drawer-head"><div><p class="eyebrow">YOUR MARKETNEST</p><h2>Account &amp; selling</h2></div><button id="closeAccount" class="icon-button" type="button" aria-label="Close account sidebar">✕</button></div>
+    <div id="accountDrawerBody" class="account-drawer-body"></div>
+  </aside>
+  <div id="accountOverlay" class="account-overlay"></div>
   <nav class="subnav" aria-label="Product categories" id="subnav">
     <button type="button" data-cat="All" class="active" aria-pressed="true">All</button>
     <button type="button" data-cat="Electronics" aria-pressed="false">Electronics</button>
