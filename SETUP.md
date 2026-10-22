@@ -181,3 +181,11 @@ Before merging or deploying admin changes:
 3. Verify a non-admin account cannot load protected records or perform moderation.
 4. Verify product hide/restore, report status changes, review removal, and account suspend/restore against a disposable Supabase project first.
 5. Never add a service-role/secret key to browser files. The browser uses only the public publishable/anon key.
+
+
+## L. Admin account management [OPTIONAL]
+To enable account creation/deletion, password setting, and admin-role management in the Control Room:
+1. Install and sign in to the Supabase CLI, then link it to the existing Supabase project.
+2. From the repository folder, run `supabase functions deploy admin-user-management`.
+3. In Supabase Dashboard → Edge Functions → Secrets, confirm `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY` are configured for the project. The service-role key is server-only and must never be pasted into browser files or GitHub.
+4. Open Admin Control Room → Users and test with a non-critical test account first. Creating an account this way marks its email confirmed; only do that when you are authorized to create the account. Deleting an account is permanent.
