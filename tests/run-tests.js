@@ -129,12 +129,16 @@ test('Admin console verifies server-side admin membership before loading data', 
 });
 
 
-test('Legacy admin controls are hidden from public marketplace tools', () => {
+test('Marketplace admin tab and panel stay hidden until server-side authorization succeeds', () => {
   const premiumCss = read('premium.css');
   const featuresJs = read('features.js');
-  assert.ok(premiumCss.includes('#features .mn-feature-tabs [data-tab="admin"]'));
-  assert.ok(premiumCss.includes('#features .mn-feature-card[data-panel="admin"]'));
-  assert.ok(featuresJs.includes('data-tab="admin"'));
+  assert.ok(featuresJs.includes('data-tab="admin" role="tab" hidden'));
+  assert.ok(featuresJs.includes('data-panel="admin" hidden'));
+  assert.ok(featuresJs.includes("if (tab === 'admin' && !isAdmin) return;"));
+  assert.ok(featuresJs.includes("db.rpc('marketnest_is_admin')"));
+  assert.ok(featuresJs.includes('tab.hidden = !isAdmin'));
+  assert.ok(premiumCss.includes('[data-tab="admin"][hidden]'));
+  assert.ok(premiumCss.includes('[data-panel="admin"][hidden]'));
 });
 
 test('Admin dashboard identifies the Supabase query that failed', () => {
