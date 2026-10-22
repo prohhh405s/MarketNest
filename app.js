@@ -340,11 +340,13 @@
     var f = e.currentTarget, btn = f.querySelector("button[type=submit]"); if (btn.disabled) return;
     var accountType = f.elements.accountType.value === "seller" ? "seller" : "customer";
     var storeName = f.elements.storeName.value.trim(), email = f.elements.email.value.trim(), pw = f.elements.password.value;
+    var sellerPhone = f.elements.sellerPhone.value.trim();
     if (storeName.length < 2) return setMsg("authMessage", (accountType === "seller" ? "Shop name" : "Name") + " must have at least 2 characters.", true);
+    if (accountType === "seller" && !/^\\+?[0-9 ()-]{7,20}$/.test(sellerPhone)) return setMsg("authMessage", "Enter a valid contact phone number for your seller account.", true);
     if (!H.validateEmail(email)) return setMsg("authMessage", "Enter a valid email address.", true);
     var pwErr = H.validatePassword(pw); if (pwErr) return setMsg("authMessage", pwErr, true);
     setBusy(btn, true, "Creating account…");
-    var r = await db.auth.signUp({ email: email, password: pw, options: { data: accountType === "seller" ? { store_name: storeName, account_type: "seller" } : { display_name: storeName, account_type: "customer" }, emailRedirectTo: siteUrl() } });
+    var r = await db.auth.signUp({ email: email, password: pw, options: { data: accountType === "seller" ? { store_name: storeName, account_type: "seller", seller_phone: sellerPhone } : { display_name: storeName, account_type: "customer" }, emailRedirectTo: siteUrl() } });
     setBusy(btn, false, "", "Create seller account");
     if (r.error) return setMsg("authMessage", friendlyAuthError(r.error), true);
     f.reset();
@@ -428,6 +430,10 @@
     var seller = e.target.value === "seller";
     $("nameLabel").textContent = seller ? "Shop name" : "Your name";
     $("signupForm").elements.storeName.placeholder = seller ? "e.g. BrightNest" : "e.g. Aarav";
+    $("sellerPhoneField").hidden = !seller;
+    $("sellerPhoneHint").hidden = !seller;
+    $("signupForm").elements.sellerPhone.required = seller;
+    $("signupForm").elements.sellerPhone.setCustomValidity("");
   });
   $("changePwForm").addEventListener("submit", async function (e) {
     e.preventDefault(); if (!db || !currentUser) return;
