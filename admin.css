@@ -5,3 +5,11 @@
 @media(max-width:760px){.sidebar{transform:translateX(-102%);transition:transform .2s;box-shadow:var(--shadow)}.sidebar.open{transform:translateX(0)}.main-area{margin-left:0}.mobile-menu{display:inline-flex}.topbar{min-height:62px;padding-inline:14px}.breadcrumbs{margin-right:auto}.top-actions{gap:7px}.live-pill{display:none}.content-wrap{padding:23px 14px 18px}.page-heading{align-items:flex-start;flex-direction:column;margin-bottom:20px}.heading-meta{white-space:normal}.metric-grid{gap:9px}.metric-card{padding:14px}.metric-value{margin-top:12px}.panel-card{padding:15px}.panel-heading{align-items:flex-start;flex-direction:column}.table-tools{width:100%;max-width:none}.main-footer{flex-direction:column}.safety-grid{grid-template-columns:1fr}}
 @media(max-width:430px){.metric-grid{grid-template-columns:1fr 1fr}.metric-card{padding:12px}.metric-label{font-size:11px}.metric-icon{width:28px;height:28px}.metric-value{font-size:27px}.login-card{padding:24px}.top-actions .btn-quiet span{display:none}.breadcrumbs{font-size:11px;gap:7px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important;scroll-behavior:auto!important;animation-duration:.01ms!important}}
+
+/* Admin account creation controls */
+.user-create-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:18px 0;border-bottom:1px solid var(--line);margin-bottom:10px}
+.user-create-form label{display:grid;gap:7px;color:var(--muted);font-size:11px;font-weight:650}
+.user-create-form input,.user-create-form select{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--surface2);color:var(--text);padding:10px 11px;font:inherit}
+.user-create-form .small-muted{grid-column:1/-1;margin:0;color:var(--faint);font-size:11px}
+.user-actions{min-width:260px}
+@media(max-width:760px){.user-create-form{grid-template-columns:1fr}}
