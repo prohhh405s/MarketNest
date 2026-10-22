@@ -81,3 +81,20 @@ footer{padding:26px clamp(16px,5vw,72px);display:flex;align-items:center;gap:22p
 .dlg-desc{margin:6px 0;font-size:14px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;color:#33403a}
 .dlg-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
 @media(max-width:600px){.price-control{flex:1}.price-control input{width:100%}}
+
+
+/* Account and sign-in sidebar */
+.account-toggle{border:0;background:transparent;color:var(--ink);}
+.account-toggle:hover{background:#f1f3ec}
+.account-drawer{position:fixed;z-index:31;top:0;right:0;width:min(520px,100%);height:100dvh;overflow-y:auto;padding:22px;background:#f7f7f2;box-shadow:-20px 0 70px #0002;transform:translateX(105%);visibility:hidden;transition:transform .22s,visibility .22s}
+.account-drawer.open{transform:translateX(0);visibility:visible}
+.account-drawer .drawer-head{position:sticky;top:-22px;z-index:2;margin:-22px -22px 18px;padding:20px 22px 16px;background:#fff;border-bottom:1px solid var(--line)}
+.account-drawer .drawer-head .eyebrow{margin:0 0 4px}
+.account-drawer .drawer-head h2{font-size:22px;margin:0}
+.account-drawer-body .seller-workspace{display:grid;gap:14px}
+.account-drawer-body .auth-card{box-shadow:0 8px 30px #17281a0c}
+.account-drawer-body .dashboard-head{align-items:flex-start}
+.account-overlay{position:fixed;inset:0;z-index:30;background:#0e1b14a8;opacity:0;pointer-events:none;transition:opacity .22s}
+.account-overlay.show{opacity:1;pointer-events:auto}
+@media(max-width:600px){.account-drawer{padding:16px}.account-drawer .drawer-head{top:-16px;margin:-16px -16px 14px;padding:16px}.account-drawer-body .auth-card{padding:16px}}
+@media(prefers-reduced-motion:reduce){.account-drawer,.account-overlay{transition:none}}
