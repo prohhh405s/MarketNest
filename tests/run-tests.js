@@ -54,6 +54,9 @@ test('Account sign-in and selling tools are available in a responsive sidebar', 
   assert.ok(html.includes('id="accountToggle"'));
   assert.ok(html.includes('id="accountDrawer"'));
   assert.ok(html.includes('id="accountDrawerBody"'));
+  assert.ok(html.includes('name="sellerPhone"'));
+  assert.ok(app.includes('seller_phone: sellerPhone'));
+  assert.ok(app.includes('No OTP or phone verification is used.'));
   assert.ok(app.includes('appendChild(accountWorkspace)'));
   assert.ok(app.includes('function openAccount()'));
   assert.ok(app.includes('function closeAccount()'));
