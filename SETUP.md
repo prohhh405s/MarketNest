@@ -168,3 +168,16 @@ Then sign out and back in on MarketNest and open **MarketNest Tools → Admin**.
 - [ ] As admin, suspend a test account; confirm it cannot place orders, sell, send messages, or report content. Restore it afterward.
 - [ ] Test a product at stock 0; the storefront should disable adding it to the demo cart, and the database must reject an order that exceeds stock.
 - [ ] Confirm there is no service-role/secret key in any frontend file or GitHub commit.
+
+## Private admin control room
+
+After `migration-v4-marketplace.sql` and its prerequisites have succeeded, authorize a verified existing account using the project-owner SQL above. Then open `https://YOUR-VERCEL-DOMAIN/admin.html` and sign in with that account. The route is not linked from the storefront, but it is not a secret security boundary: the admin RPC and database RLS policies must authorize every privileged operation.
+
+The panel can monitor listings, demo orders, reports, reviews and account profiles. Hiding a listing retains its row; suspending a profile does not delete its Supabase Auth identity; removing a review is permanent and prompts for confirmation. The orders area is read-only and order totals represent demo order values, not collected payments. Do not use a production customer account for moderation tests.
+
+Before merging or deploying admin changes:
+1. Run `node tests/run-tests.js`.
+2. Test the page using a disposable admin account and non-admin account.
+3. Verify a non-admin account cannot load protected records or perform moderation.
+4. Verify product hide/restore, report status changes, review removal, and account suspend/restore against a disposable Supabase project first.
+5. Never add a service-role/secret key to browser files. The browser uses only the public publishable/anon key.

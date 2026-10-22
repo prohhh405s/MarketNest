@@ -39,3 +39,19 @@ Follow `SETUP.md` in order. Apply v2, then v3, then v4 migrations. Replace the p
 
 
 Category expansion: run `migration-v5-categories.sql` after migration v4 to enable the 10 additional product categories on existing databases.
+
+## Private admin control room
+
+A standalone dashboard is available at `/admin.html` after deployment. It is intentionally not linked from the public storefront and asks for an existing account that has been granted admin membership. The page uses `marketnest_is_admin()` for authorization and the existing database RLS policies for reads and writes. `noindex` is only a crawler hint, not a security boundary.
+
+Available tools:
+- Overview counts for products, profiles, demo orders, and open reports
+- Product moderation (hide/restore; product records are retained)
+- Demo order monitoring (read-only)
+- Report status management
+- Review removal (permanent, with confirmation)
+- Account suspension/restoration (does not delete or disable the Supabase Auth identity)
+
+Requirements: apply `migration-v4-marketplace.sql` and its dependent migrations, then authorize a verified account in `marketnest_admins` using the SQL in `SETUP.md`. Never add admin membership to public signup. All moderation actions are rechecked against the admin RPC and rely on database RLS.
+
+Run offline smoke checks with `node tests/run-tests.js`. These checks do not replace browser QA or testing against a disposable Supabase project.

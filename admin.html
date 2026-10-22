@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#090d12">
+  <title>MarketNest Control Room</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div id="authGate" class="auth-gate">
+    <form id="adminLogin" class="login-card">
+      <a class="admin-brand" href="/" aria-label="MarketNest home"><span class="brand-mark">M</span><span>market<b>nest</b><small>CONTROL ROOM</small></span></a>
+      <p class="eyebrow">RESTRICTED AREA</p>
+      <h1>Welcome back.</h1>
+      <p class="subtle">Sign in with your existing MarketNest admin account. Admin access is verified by Supabase, not by this page's URL.</p>
+      <label>Email address<input name="email" type="email" autocomplete="username" required maxlength="254" placeholder="admin@example.com"></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="72" placeholder="Your password"></label>
+      <button class="btn btn-primary full" type="submit" id="loginBtn">Sign in securely <span>↗</span></button>
+      <p id="loginMessage" class="message" role="status" aria-live="polite"></p>
+      <a class="back-link" href="/">← Back to marketplace</a>
+    </form>
+  </div>
+
+  <div id="adminApp" class="admin-app" hidden>
+    <aside class="sidebar" id="sidebar">
+      <a class="admin-brand" href="/" aria-label="MarketNest home"><span class="brand-mark">M</span><span>market<b>nest</b><small>CONTROL ROOM</small></span></a>
+      <div class="workspace-label">WORKSPACE</div>
+      <nav class="side-nav" aria-label="Admin navigation">
+        <button class="nav-item active" data-view="overview"><span class="nav-icon">◫</span> Overview</button>
+        <button class="nav-item" data-view="products"><span class="nav-icon">▦</span> Products <span class="nav-count" id="navProductCount">0</span></button>
+        <button class="nav-item" data-view="orders"><span class="nav-icon">↗</span> Orders <span class="nav-count" id="navOrderCount">0</span></button>
+        <button class="nav-item" data-view="reports"><span class="nav-icon">⚑</span> Reports <span class="nav-count alert-count" id="navReportCount">0</span></button>
+        <button class="nav-item" data-view="reviews"><span class="nav-icon">☆</span> Reviews</button>
+        <button class="nav-item" data-view="users"><span class="nav-icon">♙</span> Users</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="secure-note"><span class="secure-dot"></span><div><strong>Protected session</strong><small>Supabase authorization enabled</small></div></div>
+        <button class="nav-item" id="signOutBtn"><span class="nav-icon">↪</span> Sign out</button>
+        <a class="back-link" href="/">← View marketplace</a>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="icon-btn mobile-menu" id="menuBtn" aria-label="Toggle navigation">☰</button>
+        <div class="breadcrumbs"><span>MarketNest</span><span>/</span><strong id="crumbTitle">Overview</strong></div>
+        <div class="top-actions">
+          <span class="live-pill"><i></i> Live data</span>
+          <button class="btn btn-quiet" id="refreshBtn">↻ <span>Refresh</span></button>
+          <div class="avatar" id="adminAvatar">A</div>
+        </div>
+      </header>
+
+      <div class="content-wrap">
+        <section class="page-heading">
+          <div><p class="eyebrow">MARKETPLACE OPERATIONS</p><h1 id="pageTitle">Overview</h1><p class="subtle" id="pageSubtitle">A clear view of what's happening across your marketplace.</p></div>
+          <div class="heading-meta"><span class="status-dot"></span><span id="lastUpdated">Connecting to Supabase…</span></div>
+        </section>
+        <div id="globalMessage" class="global-message" role="status" aria-live="polite" hidden></div>
+
+        <section class="view-panel" data-panel="overview">
+          <div class="metric-grid">
+            <article class="metric-card"><div class="metric-top"><span class="metric-label">Published products</span><span class="metric-icon green">▦</span></div><strong class="metric-value" id="statProducts">—</strong><p><span class="metric-caption">Total listings in catalog</span></p></article>
+            <article class="metric-card"><div class="metric-top"><span class="metric-label">Registered accounts</span><span class="metric-icon blue">♙</span></div><strong class="metric-value" id="statUsers">—</strong><p><span class="metric-caption">Customer and seller profiles</span></p></article>
+            <article class="metric-card"><div class="metric-top"><span class="metric-label">Demo orders</span><span class="metric-icon violet">↗</span></div><strong class="metric-value" id="statOrders">—</strong><p><span class="metric-caption">Order records, not payments</span></p></article>
+            <article class="metric-card"><div class="metric-top"><span class="metric-label">Open reports</span><span class="metric-icon orange">⚑</span></div><strong class="metric-value" id="statReports">—</strong><p><span class="metric-caption">Items needing review</span></p></article>
+          </div>
+          <div class="overview-grid">
+            <section class="panel-card"><div class="panel-heading"><div><h2>Recent orders</h2><p>Latest order records from the database</p></div><button class="text-btn" data-go="orders">View all ↗</button></div><div id="overviewOrders" class="table-wrap"><div class="loading-row">Loading order activity…</div></div></section>
+            <section class="panel-card"><div class="panel-heading"><div><h2>Reports inbox</h2><p>Content flagged by marketplace users</p></div><button class="text-btn" data-go="reports">Review all ↗</button></div><div id="overviewReports" class="mini-list"><div class="loading-row">Loading reports…</div></div></section>
+          </div>
+          <section class="panel-card health-panel"><div class="panel-heading"><div><h2>Operations & safety</h2><p>Things worth remembering before you press buttons</p></div><span class="status-chip">Security first</span></div><div class="safety-grid"><div><span class="safety-mark">✓</span><div><strong>Database-authorized admin</strong><p>Access depends on the marketnest_is_admin RPC and existing row-level security policies.</p></div></div><div><span class="safety-mark">₹</span><div><strong>Orders are demo-only</strong><p>Order totals are not revenue, payments are not collected, and this panel cannot trigger live payments.</p></div></div><div><span class="safety-mark">!</span><div><strong>Moderation is consequential</strong><p>Hiding listings and suspending users changes live marketplace behavior. Review each confirmation carefully.</p></div></div></div></section>
+        </section>
+
+        <section class="view-panel" data-panel="products" hidden>
+          <div class="panel-card"><div class="panel-heading"><div><h2>Product moderation</h2><p>Hide or restore a listing. Product records are retained.</p></div><div class="table-tools"><input id="productSearch" type="search" placeholder="Search listings…" aria-label="Search listings"></div></div><div id="productsTable" class="table-wrap"><div class="loading-row">Loading products…</div></div></div>
+        </section>
+        <section class="view-panel" data-panel="orders" hidden>
+          <div class="panel-card"><div class="panel-heading"><div><h2>Order monitoring</h2><p>Historical demo orders. No payment or shipment actions are available here.</p></div><div class="table-tools"><input id="orderSearch" type="search" placeholder="Search order ID…" aria-label="Search orders"></div></div><div id="ordersTable" class="table-wrap"><div class="loading-row">Loading orders…</div></div></div>
+        </section>
+        <section class="view-panel" data-panel="reports" hidden>
+          <div class="panel-card"><div class="panel-heading"><div><h2>Reports inbox</h2><p>Review submitted reports and record their resolution status.</p></div><div class="table-tools"><select id="reportFilter" aria-label="Filter reports"><option value="all">All statuses</option><option value="open">Open</option><option value="reviewing">Reviewing</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select></div></div><div id="reportsTable" class="table-wrap"><div class="loading-row">Loading reports…</div></div></div>
+        </section>
+        <section class="view-panel" data-panel="reviews" hidden>
+          <div class="panel-card"><div class="panel-heading"><div><h2>Review moderation</h2><p>Public product reviews. Removal is permanent and requires confirmation.</p></div></div><div id="reviewsTable" class="table-wrap"><div class="loading-row">Loading reviews…</div></div></div>
+        </section>
+        <section class="view-panel" data-panel="users" hidden>
+          <div class="panel-card"><div class="panel-heading"><div><h2>Account management</h2><p>Suspend or restore marketplace activity. This does not delete Supabase Auth identities.</p></div><div class="table-tools"><input id="userSearch" type="search" placeholder="Search accounts…" aria-label="Search accounts"></div></div><div id="usersTable" class="table-wrap"><div class="loading-row">Loading accounts…</div></div></div>
+        </section>
+        <footer class="main-footer"><span>MarketNest Control Room</span><span>Private admin surface · Data protected by Supabase RLS</span></footer>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
