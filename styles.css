@@ -98,3 +98,7 @@ footer{padding:26px clamp(16px,5vw,72px);display:flex;align-items:center;gap:22p
 .account-overlay.show{opacity:1;pointer-events:auto}
 @media(max-width:600px){.account-drawer{padding:16px}.account-drawer .drawer-head{top:-16px;margin:-16px -16px 14px;padding:16px}.account-drawer-body .auth-card{padding:16px}}
 @media(prefers-reduced-motion:reduce){.account-drawer,.account-overlay{transition:none}}
+
+/* The account workspace now lives in the drawer, so keep the public intro balanced. */
+.seller-panel{grid-template-columns:minmax(0,1fr);max-width:900px;margin-inline:auto}
+.seller-intro{max-width:680px}
