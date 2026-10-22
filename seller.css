@@ -1,0 +1,42 @@
+/* MarketNest: seller studio, auth forms, dashboard */
+.seller-panel{display:grid;grid-template-columns:1fr 1fr;gap:45px;background:#202f28;color:#fff;border-radius:22px;padding:clamp(22px,4vw,48px);margin-top:70px}
+.seller-intro .eyebrow{color:var(--green)}.seller-panel h2{font-size:34px;max-width:350px}
+.seller-intro>p:not(.eyebrow){color:#d3dcd6;line-height:1.7;max-width:420px;font-size:15px}
+.seller-note{margin-top:26px;padding:12px;background:#ffffff0f;border:1px solid #ffffff24;border-radius:9px;color:#e4ece6;font-size:13px;line-height:1.6}
+.account-status{margin-top:14px;font-size:13px;color:#d3dcd6}
+.seller-workspace{min-width:0}
+.auth-card{background:#fff;color:var(--ink);border-radius:14px;padding:22px;border:1px solid #e4e7df}.auth-card h3{font-size:21px;margin:0 0 12px}
+.small-muted{color:var(--muted);font-size:13px;line-height:1.55;margin:0}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:#f1f3ec;padding:4px;border-radius:10px;margin-bottom:16px}
+.auth-tabs button{border:0;background:transparent;padding:9px;border-radius:7px;font-weight:700;font-size:14px;color:#3e4b45}.auth-tabs button.active{background:#fff;box-shadow:0 1px 4px #0002;color:var(--ink)}
+.seller-form{display:grid;gap:13px}.seller-form[hidden]{display:none}
+.seller-form label,.upload-box>label{display:grid;gap:6px;font-size:13px;font-weight:700;color:#33403a}
+.seller-form input:not([type=file]),.seller-form select{width:100%;padding:12px;border:1px solid #c9d1c5;border-radius:8px;background:#f7f8f4;color:#18231f}
+.seller-form input:focus,.seller-form select:focus{border-color:#3f6b25}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.primary-btn{border:0;border-radius:9px;background:var(--green);color:#17251b;padding:13px 16px;font-weight:800}.primary-btn:hover{filter:brightness(.95)}
+.secondary-btn{border:1px solid #c9d1c5;border-radius:9px;background:#fff;color:var(--ink);padding:10px 14px;font-weight:700}.secondary-btn:hover{background:#f1f3ec}.secondary-btn.small{padding:6px 10px;font-size:13px}
+button:disabled{opacity:.6;cursor:not-allowed}
+.link-btn{border:0;background:transparent;color:#2c5a8f;text-decoration:underline;font-size:14px;padding:4px 0;text-align:left;justify-self:start}
+.form-message{font-size:13px;color:#2f6a1f;min-height:18px;margin:12px 0 0;font-weight:600}.error-message{color:var(--danger)}
+.dashboard-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:16px;flex-wrap:wrap}.dashboard-head h3{margin:0 0 4px}
+.upload-box{display:grid;gap:6px;padding:12px;border:1px dashed #b9c4b3;border-radius:10px;background:#fbfcf9}
+.upload-box input[type=file]{font-size:13px;max-width:100%}
+.image-preview{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.image-preview img{width:96px;height:96px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.upload-bar{height:6px;background:#e4e7df;border-radius:6px;overflow:hidden}.upload-bar span{display:block;height:100%;width:40%;background:#3f6b25;border-radius:6px;animation:slide 1s ease-in-out infinite alternate}
+@keyframes slide{from{margin-left:0}to{margin-left:60%}}
+.my-listings-heading{margin:22px 0 8px;font-size:16px}
+.my-listings{display:grid;gap:8px}
+.my-listing{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:10px}
+.my-listing .cart-thumb{height:48px;font-size:22px}
+.my-listing strong{display:block;font-size:14px;overflow-wrap:anywhere}.my-listing span{font-size:13px;color:var(--muted)}
+.remove-listing{border:1px solid #e3b8b0;background:#fff;color:var(--danger);border-radius:8px;padding:7px 11px;font-weight:700;font-size:13px}.remove-listing:hover{background:#fdf0ee}
+@media(max-width:850px){.seller-panel{grid-template-columns:1fr;gap:26px}}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}.my-listing{grid-template-columns:48px 1fr}.my-listing .remove-listing{grid-column:1/-1}.auth-card{padding:16px}}
+
+/* v3: account type, textarea */
+.acct-type{border:1px solid #c9d1c5;border-radius:10px;padding:10px 12px;display:grid;gap:8px}
+.acct-type legend{font-size:13px;font-weight:700;color:#33403a;padding:0 6px}
+.acct-type label{display:flex;gap:8px;align-items:center;font-weight:600}
+.seller-form textarea{width:100%;padding:12px;border:1px solid #c9d1c5;border-radius:8px;background:#f7f8f4;color:#18231f;font:inherit;resize:vertical}
+.seller-form textarea:focus{border-color:#3f6b25}

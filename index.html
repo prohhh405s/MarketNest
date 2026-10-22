@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="MarketNest is a marketplace where independent sellers list products. Browse, search and filter listings.">
+  <meta name="theme-color" content="#204c3b">
+  <title>MarketNest — Independent seller marketplace</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23204c3b'/%3E%3Cpath d='M7 21c0-6 4-10 9-10s9 4 9 10' fill='none' stroke='%23b8ef75' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='21' r='3' fill='%23b8ef75'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="seller.css">
+  <link rel="stylesheet" href="features.css">
+</head>
+<body>
+  <a class="skip-link" href="#products">Skip to products</a>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="MarketNest home">
+      <svg class="logo" viewBox="0 0 32 32" width="30" height="30" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#204c3b"/><path d="M7 21c0-6 4-10 9-10s9 4 9 10" fill="none" stroke="#b8ef75" stroke-width="3" stroke-linecap="round"/><circle cx="16" cy="21" r="3" fill="#b8ef75"/></svg>
+      <span>market<b>nest</b></span>
+    </a>
+    <form class="search-wrap" id="searchForm" role="search">
+      <label class="sr-only" for="search">Search products by name</label>
+      <input id="search" type="search" placeholder="Search products by name" autocomplete="off" maxlength="80">
+      <button id="searchBtn" class="search-btn" type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16 16l5 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
+    </form>
+    <a class="ghost-link" href="#seller">Account &amp; selling</a>
+    <button id="savedToggle" class="cart-button" type="button" aria-pressed="false" aria-label="Show saved items">♡ <span class="cart-label">Saved</span> <span id="savedCount" class="count">0</span></button>
+    <button id="cartToggle" class="cart-button" type="button" aria-label="Open demo cart">🛒 <span class="cart-label">Demo cart</span> <span id="cartCount" class="count">0</span></button>
+  </header>
+  <nav class="subnav" aria-label="Product categories" id="subnav">
+    <button type="button" data-cat="All" class="active" aria-pressed="true">All</button>
+    <button type="button" data-cat="Electronics" aria-pressed="false">Electronics</button>
+    <button type="button" data-cat="Home" aria-pressed="false">Home</button>
+    <button type="button" data-cat="Fashion" aria-pressed="false">Fashion</button>
+    <button type="button" data-cat="Books" aria-pressed="false">Books</button>
+    <button type="button" data-cat="Beauty & Personal Care" aria-pressed="false">Beauty & Personal Care</button>
+    <button type="button" data-cat="Sports & Outdoors" aria-pressed="false">Sports & Outdoors</button>
+    <button type="button" data-cat="Toys & Games" aria-pressed="false">Toys & Games</button>
+    <button type="button" data-cat="Grocery" aria-pressed="false">Grocery</button>
+    <button type="button" data-cat="Health & Wellness" aria-pressed="false">Health & Wellness</button>
+    <button type="button" data-cat="Automotive" aria-pressed="false">Automotive</button>
+    <button type="button" data-cat="Pet Supplies" aria-pressed="false">Pet Supplies</button>
+    <button type="button" data-cat="Garden & Outdoors" aria-pressed="false">Garden & Outdoors</button>
+    <button type="button" data-cat="Stationery & Office" aria-pressed="false">Stationery & Office</button>
+    <button type="button" data-cat="Kitchen & Dining" aria-pressed="false">Kitchen & Dining</button>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">INDEPENDENT SELLERS · ONE MARKETPLACE</p>
+        <h1>Discover something<br><em>worth keeping.</em></h1>
+        <p class="hero-copy">Browse listings from sellers who publish directly on MarketNest. Search by name, filter by category and open any listing for details.</p>
+        <a href="#products" class="hero-cta">Browse listings ↓</a>
+      </div>
+      <div class="hero-art" aria-hidden="true"><div class="sun"></div><div class="package">MN</div><div class="orb orb-one"></div><div class="orb orb-two"></div></div>
+    </section>
+
+    <section class="section-head" id="products">
+      <div><p class="eyebrow">THE MARKETPLACE</p><h2>Latest listings</h2></div>
+      <div class="controls">
+        <label class="control"><span class="sr-only">Filter by category</span>
+          <select id="category"><option value="All">All categories</option><option>Electronics</option><option>Home</option><option>Fashion</option><option>Books</option><option>Beauty & Personal Care</option><option>Sports & Outdoors</option><option>Toys & Games</option><option>Grocery</option><option>Health & Wellness</option><option>Automotive</option><option>Pet Supplies</option><option>Garden & Outdoors</option><option>Stationery & Office</option><option>Kitchen & Dining</option></select></label>
+        <label class="control"><span class="sr-only">Sort products</span>
+          <select id="sort"><option value="newest">Newest first</option><option value="price-asc">Price: low to high</option><option value="price-desc">Price: high to low</option></select></label>
+        <label class="control price-control"><span class="sr-only">Minimum price in rupees</span><input id="minPrice" type="number" min="0" max="1000000" inputmode="numeric" placeholder="Min ₹"></label>
+        <label class="control price-control"><span class="sr-only">Maximum price in rupees</span><input id="maxPrice" type="number" min="0" max="1000000" inputmode="numeric" placeholder="Max ₹"></label>
+        <button id="clearFilters" class="secondary-btn small" type="button">Clear filters</button>
+      </div>
+    </section>
+    <p id="resultInfo" class="muted" role="status" aria-live="polite"></p>
+    <section id="productGrid" class="product-grid" aria-live="polite" aria-busy="true"></section>
+
+    <section class="seller-panel" id="seller">
+      <div class="seller-intro">
+        <p class="eyebrow">YOUR ACCOUNT · SHOP OR SELL</p>
+        <h2>Join MarketNest.</h2>
+        <p>Create a free customer account to save items you like, or a seller account to publish listings with photos. Verify your email, then sign in. You can only manage listings owned by your account.</p>
+        <div class="seller-note">🔒 Database and file-storage rules (Supabase RLS) enforce who can publish and delete. Demo orders are available; real payments are not enabled.</div>
+        <div id="accountStatus" class="account-status" role="status">Checking account setup…</div>
+      </div>
+
+      <div class="seller-workspace">
+        <section id="authPanel" class="auth-card" aria-labelledby="authTitle">
+          <h3 id="authTitle">Seller account</h3>
+          <div class="auth-tabs" id="authTabs" role="group" aria-label="Account options">
+            <button type="button" data-auth-view="login" class="active" aria-pressed="true">Sign in</button>
+            <button type="button" data-auth-view="signup" aria-pressed="false">Create account</button>
+          </div>
+
+          <form id="loginForm" class="seller-form" data-view="login" novalidate>
+            <label>Email<input name="email" type="email" maxlength="254" required autocomplete="email" placeholder="you@example.com"></label>
+            <label>Password<input name="password" type="password" maxlength="72" required autocomplete="current-password" placeholder="Your password"></label>
+            <button class="primary-btn" type="submit">Sign in</button>
+            <button class="link-btn" type="button" id="forgotLink">Forgot Password?</button>
+          </form>
+
+          <form id="signupForm" class="seller-form" data-view="signup" hidden novalidate>
+            <fieldset class="acct-type"><legend>I want to</legend>
+              <label><input type="radio" name="accountType" value="customer" checked> Shop &amp; save items</label>
+              <label><input type="radio" name="accountType" value="seller"> Sell products</label>
+            </fieldset>
+            <label><span id="nameLabel">Your name</span><input name="storeName" maxlength="60" required autocomplete="name" placeholder="e.g. Aarav"></label>
+            <label>Email<input name="email" type="email" maxlength="254" required autocomplete="email" placeholder="you@example.com"></label>
+            <label>Password<input name="password" type="password" maxlength="72" required autocomplete="new-password" placeholder="8+ characters, letters and numbers" aria-describedby="pwHint"></label>
+            <p id="pwHint" class="small-muted">Use at least 8 characters with a letter and a number. Don't reuse a password from another site.</p>
+            <button class="primary-btn" type="submit">Create seller account</button>
+          </form>
+
+          <form id="forgotForm" class="seller-form" data-view="forgot" hidden novalidate>
+            <p class="small-muted">Enter the email you registered with. If an account exists, we'll send a link to choose a new password.</p>
+            <label>Registered email<input name="email" type="email" maxlength="254" required autocomplete="email" placeholder="you@example.com"></label>
+            <button class="primary-btn" type="submit">Send reset link</button>
+            <button class="link-btn" type="button" data-auth-view="login">← Back to sign in</button>
+          </form>
+
+          <form id="resetForm" class="seller-form" data-view="reset" hidden novalidate>
+            <p class="small-muted">Choose a new password for your seller account.</p>
+            <label>New password<input name="password" type="password" maxlength="72" required autocomplete="new-password" placeholder="8+ characters, letters and numbers"></label>
+            <label>Confirm new password<input name="confirm" type="password" maxlength="72" required autocomplete="new-password" placeholder="Type it again"></label>
+            <button class="primary-btn" type="submit">Update password</button>
+          </form>
+
+          <p id="authMessage" class="form-message" role="status" aria-live="polite"></p>
+        </section>
+
+        <section id="dashboard" class="auth-card" hidden aria-labelledby="welcomeSeller">
+          <div class="dashboard-head">
+            <div><p class="eyebrow">SIGNED IN</p><h3 id="welcomeSeller">Seller dashboard</h3><p id="sellerEmail" class="small-muted"></p></div>
+            <button id="logoutBtn" class="secondary-btn" type="button">Sign out</button>
+          </div>
+          <form id="productForm" class="seller-form" novalidate>
+            <label>Product name<input name="name" maxlength="80" required placeholder="e.g. Desk lamp"></label>
+            <label>Description (optional)<textarea name="description" maxlength="500" rows="3" placeholder="Condition, size, what is included… (max 500 characters)"></textarea></label>
+            <div class="form-row">
+              <label>Price (₹)<input name="price" type="number" min="1" max="1000000" step="1" inputmode="numeric" required placeholder="799"></label>
+              <label>Category<select name="category"><option>Electronics</option><option>Home</option><option>Fashion</option><option>Books</option><option>Beauty & Personal Care</option><option>Sports & Outdoors</option><option>Toys & Games</option><option>Grocery</option><option>Health & Wellness</option><option>Automotive</option><option>Pet Supplies</option><option>Garden & Outdoors</option><option>Stationery & Office</option><option>Kitchen & Dining</option></select></label>
+            </div>
+            <label>Emoji (shown if there is no photo)<input name="emoji" maxlength="8" value="📦" placeholder="📦"></label>
+            <div class="upload-box">
+              <label for="imageInput">Product photo (optional)</label>
+              <input id="imageInput" name="image" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="imageHint">
+              <p id="imageHint" class="small-muted">JPEG, PNG or WebP · maximum 2 MB (2,097,152 bytes).</p>
+              <div id="imagePreviewBox" class="image-preview" hidden>
+                <img id="imagePreview" alt="Preview of the selected product photo">
+                <button type="button" id="removeImage" class="secondary-btn small">Remove photo</button>
+              </div>
+              <p id="imageError" class="form-message error-message" role="alert"></p>
+            </div>
+            <div id="uploadBar" class="upload-bar" role="progressbar" aria-label="Publishing" aria-busy="true" hidden><span></span></div>
+            <button class="primary-btn" type="submit" id="publishBtn">＋ Publish listing</button>
+          </form>
+          <p id="productMessage" class="form-message" role="status" aria-live="polite"></p>
+          <h4 class="my-listings-heading">My listings</h4>
+          <div id="myListings" class="my-listings"></div>
+        </section>
+
+        <section id="customerArea" class="auth-card" hidden aria-labelledby="custName">
+          <div class="dashboard-head">
+            <div><p class="eyebrow">CUSTOMER ACCOUNT</p><h3 id="custName">Your account</h3><p id="custEmail" class="small-muted"></p></div>
+            <button id="customerLogout" class="secondary-btn" type="button">Sign out</button>
+          </div>
+          <p id="custSaved" class="small-muted"></p>
+          <p><button id="viewSaved" class="secondary-btn" type="button">♡ View my saved items</button></p>
+          <h4 class="my-listings-heading">Change password</h4>
+          <form id="changePwForm" class="seller-form" novalidate>
+            <label>New password<input name="password" type="password" maxlength="72" required autocomplete="new-password" placeholder="8+ characters, letters and numbers"></label>
+            <label>Confirm new password<input name="confirm" type="password" maxlength="72" required autocomplete="new-password"></label>
+            <button class="secondary-btn" type="submit">Update password</button>
+          </form>
+          <p id="pwMessage" class="form-message" role="status" aria-live="polite"></p>
+          <h4 class="my-listings-heading">Want to sell too?</h4>
+          <form id="becomeSellerForm" class="seller-form" novalidate>
+            <label>Shop name<input name="shopName" maxlength="60" required placeholder="e.g. BrightNest"></label>
+            <button class="secondary-btn" type="submit">Enable seller tools</button>
+          </form>
+          <p id="sellerMessage" class="form-message" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="productDialog" aria-labelledby="dlgName">
+    <button type="button" class="icon-button dlg-close" id="dlgClose" aria-label="Close product details">✕</button>
+    <div class="dlg-body">
+      <div class="dlg-media" id="dlgMedia"></div>
+      <div class="dlg-info">
+        <p class="eyebrow" id="dlgCategory"></p>
+        <h2 id="dlgName"></h2>
+        <p class="dlg-price" id="dlgPrice"></p>
+        <p class="small-muted" id="dlgSeller"></p>
+        <p class="small-muted" id="dlgDate"></p>
+        <p class="dlg-desc" id="dlgDesc"></p>
+        <button type="button" class="primary-btn" id="dlgAdd">Add to demo cart</button>
+        <div class="dlg-actions"><button type="button" class="secondary-btn" id="dlgSave" aria-pressed="false">♡ Save item</button><button type="button" class="secondary-btn" id="dlgShare">Copy link</button><button type="button" class="secondary-btn" id="dlgMore">More from this seller</button></div>
+        <p class="tiny">Demo orders can be created from MarketNest Tools. No payment will be taken.</p>
+      </div>
+    </div>
+  </dialog>
+
+  <aside id="cartDrawer" class="cart-drawer" aria-label="Demo cart" aria-hidden="true">
+    <div class="drawer-head"><div><p class="eyebrow">DEMO CART</p><h2>Your cart</h2></div><button id="closeCart" class="icon-button" type="button" aria-label="Close cart">✕</button></div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-bottom"><div class="total-line"><span>Demo subtotal</span><strong id="cartTotal">₹0</strong></div><button id="checkout" class="primary-btn full" type="button">Go to demo checkout</button><p class="tiny">Demo only: an order can be recorded, but no payment will be taken.</p></div>
+  </aside>
+  <div id="overlay" class="overlay"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <footer><a class="brand footer-brand" href="#top">market<b>nest</b></a><p>MarketNest · Demo checkout is available; real payments are not enabled.</p></footer>
+
+  <!-- The publishable/anon key is designed for browsers. Never put a service_role/secret key here. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="helpers.js"></script>
+  <script src="app.js"></script>
+  <script src="features.js"></script>
+</body>
+</html>
