@@ -105,11 +105,14 @@ test('Private admin console is not linked from public storefront navigation', ()
   assert.ok(adminHtml.includes('id="adminLogin"'));
 });
 
-test('Storefront checks server-side admin membership and redirects authorized admins after sign-in', () => {
+test('Admin redirect happens only after explicit storefront login, not session restoration', () => {
+  const signedInUi = app.slice(app.indexOf('function setSignedInUI'), app.indexOf('function friendlyAuthError'));
+  const loginHandler = app.slice(app.indexOf('$("loginForm").addEventListener'), app.indexOf('var forgotCooldown'));
   assert.ok(app.includes('db.rpc("marketnest_is_admin")'));
   assert.ok(app.includes('adminResult.data === true'));
-  assert.ok(app.includes('window.location.replace(new URL("admin.html"'));
-  assert.ok(app.includes('currentUser.id === signedInId'));
+  assert.ok(!signedInUi.includes('window.location.replace'), 'Restoring an existing session must not redirect away from the marketplace');
+  assert.ok(loginHandler.includes('window.location.replace(new URL("admin.html"'));
+  assert.ok(loginHandler.includes('currentUser.id === signedInId'));
 });
 
 test('Admin console verifies server-side admin membership before loading data', () => {
