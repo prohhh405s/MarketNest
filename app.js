@@ -348,7 +348,7 @@
     var pwErr = H.validatePassword(pw); if (pwErr) return setMsg("authMessage", pwErr, true);
     setBusy(btn, true, "Creating account…");
     var r = await db.auth.signUp({ email: email, password: pw, options: { data: accountType === "seller" ? { store_name: storeName, account_type: "seller", seller_phone: sellerPhone } : { display_name: storeName, account_type: "customer" }, emailRedirectTo: siteUrl() } });
-    setBusy(btn, false, "", "Create seller account");
+    setBusy(btn, false, "", accountType === "seller" ? "Create seller account" : "Create buyer account");
     if (r.error) return setMsg("authMessage", friendlyAuthError(r.error), true);
     f.reset();
     if (r.data.session) { setMsg("authMessage", "Account created and signed in."); setSignedInUI(r.data.user); }
@@ -433,6 +433,7 @@
     $("signupForm").elements.storeName.placeholder = seller ? "e.g. BrightNest" : "e.g. Aarav";
     $("sellerPhoneField").hidden = !seller;
     $("sellerPhoneHint").hidden = !seller;
+    $("signupForm").querySelector("button[type=submit]").textContent = seller ? "Create seller account" : "Create buyer account";
     $("signupForm").elements.sellerPhone.required = seller;
     $("signupForm").elements.sellerPhone.setCustomValidity("");
   });
