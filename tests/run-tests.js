@@ -137,6 +137,14 @@ test('Admin dashboard identifies the Supabase query that failed', () => {
   assert.ok(adminJs.includes('result.error.code'));
 });
 
+
+test('Admin review list respects column-level privacy grants', () => {
+  const adminJs = read('admin.js');
+  assert.ok(adminJs.includes(".from('reviews').select('id,product_id,rating,body,created_at')"));
+  assert.ok(!adminJs.includes(".from('reviews').select('id,product_id,buyer_id,rating,body,created_at')"));
+  assert.ok(adminJs.includes('Verified buyer'));
+});
+
 let failures = 0;
 for (const check of checks) {
   if (check.ok) {
