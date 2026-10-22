@@ -55,3 +55,9 @@ Available tools:
 Requirements: apply `migration-v4-marketplace.sql` and its dependent migrations, then authorize a verified account in `marketnest_admins` using the SQL in `SETUP.md`. Never add admin membership to public signup. All moderation actions are rechecked against the admin RPC and rely on database RLS.
 
 Run offline smoke checks with `node tests/run-tests.js`. These checks do not replace browser QA or testing against a disposable Supabase project.
+
+
+## Admin account management
+The Control Room's Users page can create buyer/seller accounts with email already confirmed, set a user's password, grant/revoke admin membership, and permanently delete accounts. These privileged operations run only in the `supabase/functions/admin-user-management` Edge Function; the browser never receives the service-role key.
+
+**Required deployment step:** deploy the Edge Function to the same Supabase project before using these controls. With the Supabase CLI linked to the project, run `supabase functions deploy admin-user-management`. Ensure the project's Edge Function secrets include `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. Do not add the service-role key to `supabase-config.js`, HTML, or any client-side file. The function checks the caller's session and verifies membership in `marketnest_admins` on every request. Account deletion is permanent; the function blocks self-deletion and removal of the last admin.

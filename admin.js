@@ -174,6 +174,11 @@
     state.reports = queries[2].error ? [] : (queries[2].data || []);
     state.reviews = queries[3].error ? [] : (queries[3].data || []);
     state.users = queries[4].error ? [] : (queries[4].data || []);
+    try {
+      var managed = await db.functions.invoke('admin-user-management', { body: { action: 'list' } });
+      if (!managed.error && managed.data && Array.isArray(managed.data.users)) state.users = managed.data.users;
+      else if (managed.error) notify('User directory could not be fully refreshed. Deploy the admin-user-management Edge Function and configure its secrets.', true);
+    } catch (_) { /* Keep the RLS-protected profile list visible if the function is not deployed yet. */ }
 
     $('statProducts').textContent = queries[5].error ? '—' : Number(queries[5].count || 0).toLocaleString('en-IN');
     $('statUsers').textContent = queries[6].error ? '—' : Number(queries[6].count || 0).toLocaleString('en-IN');
@@ -269,12 +274,65 @@
       return [u.display_name, u.email, u.account_type, u.user_id].join(' ').toLowerCase().includes(search);
     });
     var rows = items.map(function (u) {
-      var self = user && u.user_id === user.id;
-      return '<tr><td><span class="primary-cell">' + esc(u.display_name || 'MarketNest user') + '</span><span class="secondary-cell">' + esc(u.email || 'No email') + '</span></td>' +
-        '<td>' + esc(u.account_type || 'customer') + '</td><td>' + statusBadge(u.suspended ? 'suspended' : 'active') + '</td><td>' + esc(date(u.created_at)) + '</td><td>' +
-        (self ? '<span class="badge blue">Current admin</span>' : '<button class="action-btn ' + (u.suspended ? '' : 'danger') + '" data-user-toggle="' + esc(u.user_id) + '" data-suspended="' + !!u.suspended + '">' + (u.suspended ? 'Restore' : 'Suspend') + '</button>') + '</td></tr>';
+      var id = u.user_id || u.id;
+      var self = user && id === user.id;
+      var isAdmin = !!u.is_admin;
+      var type = isAdmin ? 'admin' : (u.account_type || 'customer');
+      return '<tr><td><span class="primary-cell">' + esc(u.display_name || u.email || 'MarketNest user') + '</span><span class="secondary-cell">' + esc(u.email || 'No email') + '</span></td>' +
+        '<td>' + esc(type) + '</td><td>' + statusBadge(u.suspended ? 'suspended' : 'active') + '</td><td>' + esc(date(u.created_at)) + '</td><td class="user-actions">' +
+        (self ? '<span class="badge blue">Current admin</span>' : '<button class="action-btn" data-user-password="' + esc(id) + '" data-user-email="' + esc(u.email || '') + '">Set password</button> ' +
+        '<button class="action-btn" data-user-admin="' + esc(id) + '" data-admin="' + isAdmin + '">' + (isAdmin ? 'Remove admin' : 'Make admin') + '</button> ' +
+        '<button class="action-btn danger" data-user-delete="' + esc(id) + '" data-user-email="' + esc(u.email || '') + '">Delete</button>') + '</td></tr>';
     });
-    $('usersTable').innerHTML = table(['Account', 'Type', 'Access', 'Created', 'Action'], rows, 'No matching accounts.');
+    $('usersTable').innerHTML = table(['Account', 'Type', 'Access', 'Created', 'Actions'], rows, 'No matching accounts.');
+  }
+
+  async function managedUserAction(payload, successText) {
+    await ensureAdmin();
+    var result = await db.functions.invoke('admin-user-management', { body: payload });
+    if (result.error || !result.data || result.data.error) throw new Error((result.data && result.data.error) || (result.error && result.error.message) || 'User management request failed. Deploy the Edge Function and configure its secrets.');
+    notify(successText);
+    await loadAll();
+  }
+
+  $('createManagedUserForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var form = e.currentTarget;
+    var data = new FormData(form);
+    var button = $('createManagedUserBtn');
+    var accountType = String(data.get('accountType') || 'customer');
+    setBusy(button, true, 'Creating…');
+    try {
+      await managedUserAction({
+        action: 'create',
+        email: String(data.get('email') || '').trim(),
+        password: String(data.get('password') || ''),
+        display_name: String(data.get('displayName') || '').trim(),
+        account_type: accountType
+      }, (accountType === 'admin' ? 'Admin' : accountType === 'seller' ? 'Seller' : 'Buyer') + ' account created without email verification.');
+      form.reset();
+    } catch (err) { notify(err.message || 'Account creation failed.', true); }
+    finally { setBusy(button, false); }
+  });
+
+  async function setManagedPassword(button) {
+    var email = button.dataset.userEmail || 'this user';
+    var password = window.prompt('Set a new password for ' + email + '. Use at least 8 characters.');
+    if (password === null) return;
+    if (password.length < 8) throw new Error('Password must be at least 8 characters.');
+    await managedUserAction({ action: 'set_password', user_id: button.dataset.userPassword, password: password }, 'Password updated.');
+  }
+
+  async function toggleManagedAdmin(button) {
+    var makeAdmin = button.dataset.admin !== 'true';
+    if (!window.confirm((makeAdmin ? 'Grant admin access to ' : 'Remove admin access from ') + (button.dataset.userAdmin || 'this account') + '?')) return;
+    await managedUserAction({ action: 'set_admin', user_id: button.dataset.userAdmin, is_admin: makeAdmin }, makeAdmin ? 'Admin access granted.' : 'Admin access removed.');
+  }
+
+  async function deleteManagedUser(button) {
+    var email = button.dataset.userEmail || 'this account';
+    if (!window.confirm('Permanently delete ' + email + '? This removes the Supabase login and may remove related records. This cannot be undone.')) return;
+    await managedUserAction({ action: 'delete', user_id: button.dataset.userDelete }, 'Account permanently deleted.');
   }
 
   async function moderateProduct(button) {
@@ -342,7 +400,13 @@
   });
   $('usersTable').addEventListener('click', function (e) {
     var button = e.target.closest('[data-user-toggle]');
-    if (button) moderateUser(button).catch(function (err) { notify(err.message, true); });
+    if (button) return moderateUser(button).catch(function (err) { notify(err.message, true); });
+    button = e.target.closest('[data-user-password]');
+    if (button) return setManagedPassword(button).catch(function (err) { notify(err.message, true); });
+    button = e.target.closest('[data-user-admin]');
+    if (button) return toggleManagedAdmin(button).catch(function (err) { notify(err.message, true); });
+    button = e.target.closest('[data-user-delete]');
+    if (button) return deleteManagedUser(button).catch(function (err) { notify(err.message, true); });
   });
   $('reportsTable').addEventListener('click', function (e) {
     var button = e.target.closest('[data-report-save]');
