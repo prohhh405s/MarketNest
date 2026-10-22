@@ -342,7 +342,7 @@
     var storeName = f.elements.storeName.value.trim(), email = f.elements.email.value.trim(), pw = f.elements.password.value;
     var sellerPhone = f.elements.sellerPhone.value.trim();
     if (storeName.length < 2) return setMsg("authMessage", (accountType === "seller" ? "Shop name" : "Name") + " must have at least 2 characters.", true);
-    if (accountType === "seller" && !/^\\+?[0-9 ()-]{7,20}$/.test(sellerPhone)) return setMsg("authMessage", "Enter a valid contact phone number for your seller account.", true);
+    if (accountType === "seller" && !/^[+]?[0-9 ()-]{7,20}$/.test(sellerPhone)) return setMsg("authMessage", "Enter a valid contact phone number for your seller account.", true);
     if (!H.validateEmail(email)) return setMsg("authMessage", "Enter a valid email address.", true);
     var pwErr = H.validatePassword(pw); if (pwErr) return setMsg("authMessage", pwErr, true);
     setBusy(btn, true, "Creating account…");
