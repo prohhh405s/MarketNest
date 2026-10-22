@@ -67,7 +67,7 @@
               aria-selected="false">Notifications</button>
       <button type="button" data-tab="reports" role="tab"
               aria-selected="false">Report listing</button>
-      <button type="button" data-tab="admin" role="tab"
+      <button type="button" data-tab="admin" role="tab" hidden
               aria-selected="false">Admin</button>
     </div>
 
@@ -213,7 +213,7 @@
         <div id="mnMyReports" class="mn-list"></div>
       </section>
 
-      <section class="mn-feature-card" data-panel="admin">
+      <section class="mn-feature-card" data-panel="admin" hidden>
         <h3>Admin moderation</h3>
         <p class="mn-note">
           Admin access must be granted by the project owner using
@@ -268,7 +268,16 @@
     return '<p class="mn-note">' + safe(msg) + '</p>';
   }
 
+  function updateAdminVisibility() {
+    var tab = panel.querySelector('[data-tab="admin"]');
+    var adminPanel = panel.querySelector('[data-panel="admin"]');
+    if (tab) tab.hidden = !isAdmin;
+    if (adminPanel) adminPanel.hidden = !isAdmin;
+    if (!isAdmin && activeTab === 'admin') switchTab('orders');
+  }
+
   function switchTab(tab) {
+    if (tab === 'admin' && !isAdmin) return;
     activeTab = tab;
     panel.querySelectorAll('[data-panel]').forEach(function (el) {
       el.classList.toggle('mn-hidden', el.dataset.panel !== tab);
@@ -1620,6 +1629,7 @@
       : null;
 
     isAdmin = false;
+    updateAdminVisibility();
 
     $('mnAccount').textContent = user
       ? 'Signed in as ' + (user.email || user.id) +
@@ -1653,7 +1663,14 @@
 
     await loadProducts();
 
-    if (activeTab === 'admin') await loadAdmin();
+    try {
+      var adminResult = await db.rpc('marketnest_is_admin');
+      isAdmin = !adminResult.error && adminResult.data === true;
+    } catch (e) {
+      isAdmin = false;
+    }
+    updateAdminVisibility();
+    if (activeTab === 'admin' && isAdmin) await loadAdmin();
   }
 
   document.addEventListener('marketnest-auth-changed', function (e) {
