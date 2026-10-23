@@ -500,12 +500,13 @@
     if (publishing) return;                         // duplicate-submission guard
     if (!db || !currentUser) return setMsg("productMessage", "Sign in before publishing.", true);
     var f = e.currentTarget, btn = $("publishBtn");
-    var name = f.elements.name.value.trim(), price = Number(f.elements.price.value);
+    var name = f.elements.name.value.trim(), price = Number(f.elements.price.value), stock = Number(f.elements.stock.value);
     var category = f.elements.category.value;
     var emoji = Array.from(f.elements.emoji.value.trim() || "📦").slice(0, 4).join("");
     var desc = (f.elements.description.value || "").trim().slice(0, 500);
     if (name.length < 2 || name.length > 80) return setMsg("productMessage", "Product name must be 2 to 80 characters.", true);
     if (!Number.isInteger(price) || price < 1 || price > 1000000) return setMsg("productMessage", "Enter a whole-number price between ₹1 and ₹10,00,000.", true);
+    if (!Number.isInteger(stock) || stock < 0 || stock > 100000) return setMsg("productMessage", "Enter available stock from 0 to 100,000.", true);
     if (selectedFile && imageColumnMissing) return setMsg("productMessage", "Photos need the SQL migration first (see SETUP.md, Step 2).", true);
     publishing = true; setBusy(btn, true, "Publishing…"); $("uploadBar").hidden = false; setMsg("productMessage", "");
     var uploadedPath = null;
@@ -513,7 +514,7 @@
       var sess = await db.auth.getSession();
       var user = sess.data && sess.data.session && sess.data.session.user;
       if (!user) throw new Error("Your session expired. Please sign in again.");
-      var row = { seller_id: user.id, name: name, price: price, category: category, emoji: emoji,
+      var row = { seller_id: user.id, name: name, price: price, stock: stock, category: category, emoji: emoji,
         seller_name: (user.user_metadata && user.user_metadata.store_name) || "MarketNest seller" };
       if (desc && !imageColumnMissing) row.description = desc;
       if (selectedFile) {
