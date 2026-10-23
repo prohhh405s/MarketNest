@@ -459,6 +459,9 @@
     }
 
     var html = [];
+    function statusLabel(value) {
+      return ({ placed: 'Order placed', processing: 'Seller preparing', ready_for_pickup: 'Ready for pickup', pickup_scheduled: 'Delivery partner pickup scheduled', picked_up: 'Picked up by delivery partner', shipped: 'In transit', out_for_delivery: 'Out for delivery', delivered: 'Delivered', cancelled: 'Cancelled' })[value] || value;
+    }
 
     for (var o of r.data) {
       var ir = await db.from('order_items')
@@ -470,14 +473,14 @@
       html.push(
         '<article class="mn-item">' +
         '<strong>Order ' + safe(o.id.slice(0, 8)) + '</strong>' +
-        '<p>' + money(o.total_amount) + ' · ' + safe(o.status) +
+        '<p>' + money(o.total_amount) + ' · ' + safe(statusLabel(o.status)) +
         ' · ' + safe(new Date(o.created_at).toLocaleDateString()) +
         '</p>' +
         items.map(function (i) {
           return '<p>' + safe(i.product_name) + ' × ' +
             safe(i.quantity) + ' — ' +
             money(i.unit_price * i.quantity) +
-            ' <span class="mn-badge">' + safe(i.status) +
+            ' <span class="mn-badge">' + safe(statusLabel(i.status)) +
             '</span></p>';
         }).join('') +
         '</article>'
@@ -741,10 +744,10 @@
         '</div>' +
         '<form class="mn-status-form" data-id="' + safe(i.id) + '">' +
         '<label>Update status<select name="status">' +
-        ['placed', 'processing', 'shipped', 'delivered', 'cancelled']
+        ['placed', 'processing', 'ready_for_pickup', 'pickup_scheduled', 'picked_up', 'shipped', 'out_for_delivery', 'delivered', 'cancelled']
           .map(function (s) {
-            return '<option ' + (s === i.status ? 'selected' : '') +
-              '>' + s + '</option>';
+            return '<option value="' + s + '" ' + (s === i.status ? 'selected' : '') +
+              '>' + ({ placed: 'Order placed', processing: 'Preparing order', ready_for_pickup: 'Ready for pickup', pickup_scheduled: 'Pickup scheduled with delivery partner', picked_up: 'Picked up by delivery partner', shipped: 'In transit', out_for_delivery: 'Out for delivery', delivered: 'Delivered', cancelled: 'Cancelled' }[s] || s) + '</option>';
           }).join('') +
         '</select></label>' +
         '<button type="submit">Update status</button>' +
@@ -762,6 +765,41 @@
     b.setAttribute('aria-expanded', String(!expanded));
     b.textContent = expanded ? 'View order details' : 'Hide order details';
     panel.hidden = expanded;
+  });
+
+
+  $('mnSellerOrders').addEventListener('submit', async function (e) {
+    var form = e.target.closest('.mn-status-form');
+    if (!form) return;
+    e.preventDefault();
+    if (!needUser()) return;
+    var id = form.dataset.id;
+    var status = form.elements.status.value;
+    var allowed = ['placed', 'processing', 'ready_for_pickup', 'pickup_scheduled', 'picked_up', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
+    if (allowed.indexOf(status) < 0) {
+      message('Choose a valid delivery status.', true);
+      return;
+    }
+    var button = form.querySelector('button[type="submit"]');
+    if (button) { button.disabled = true; button.textContent = 'Updating…'; }
+    try {
+      var result = await db.from('order_items')
+        .update({ status: status })
+        .eq('id', id)
+        .eq('seller_id', user.id)
+        .select('id');
+      if (result.error || !result.data || !result.data.length) {
+        throw new Error(result.error ? result.error.message : 'This order item could not be updated.');
+      }
+      message('Order status updated. The customer can track it in their account.');
+      await loadSellerOrders();
+      await loadBuyerOrders();
+      await loadNotifications();
+    } catch (err) {
+      message('Could not update delivery status: ' + (err.message || 'Please try again.'), true);
+    } finally {
+      if (button) { button.disabled = false; button.textContent = 'Update status'; }
+    }
   });
 
   /* Demo checkout */
