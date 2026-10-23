@@ -145,6 +145,19 @@ on conflict (user_id) do nothing;
 
 Then sign out and back in on MarketNest and open **MarketNest Tools → Admin**. If no row is inserted, check that the email is verified and spelled correctly. Keep the admin account secure and never add admin controls to public signup. The admin panel can review reports, remove listings/reviews, and suspend/restore marketplace activity for accounts. Suspended users may still authenticate, but the database blocks marketplace actions. This does not delete their Supabase login.
 
+## Seller order email notifications [REQUIRED to activate email]
+The seller order details button is available in the **MarketNest Tools → Stock & seller orders** tab. Each seller can open details for only their own product line(s), including quantity, item price, item total, status, order ID and date.
+
+The order-email Edge Function is deployed as `seller-order-email`. It validates that the signed-in buyer owns the order and sends each seller an email containing only that seller's products. Email delivery requires a Resend account and a verified sender address:
+
+1. Create a Resend account and verify a domain or sender address you control.
+2. In Supabase Dashboard → **Edge Functions → Secrets**, add:
+   - `RESEND_API_KEY` = your Resend API key (server-side only).
+   - `EMAIL_FROM` = your verified sender, for example `MarketNest Orders <orders@your-verified-domain.com>`.
+3. Keep both values in Supabase Edge Function secrets only. **Never put the Resend API key in GitHub, `features.js`, or any browser file.**
+4. Place a test order using a buyer account that orders another seller's product. Confirm the seller receives an email and that it lists only their own product(s). Check spam if needed.
+5. If email secrets are not configured, the order still succeeds and in-app notifications remain available, but email is not sent.
+
 ## Features and important limits
 - **Demo orders:** pressing “Place demo order from cart” creates a database order and decrements stock using a server-side Supabase function. Prices are read from the database, not trusted from the browser. Cancelling a line returns its stock. This is not a payment gateway, shipping integration, or legal checkout flow.
 - **Reviews:** only delivered order items are eligible, and one review per customer/product is enforced by database constraints and RLS.
