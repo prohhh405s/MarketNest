@@ -171,3 +171,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
   .account-drawer .drawer-head{top:-16px;margin:-16px -16px 16px;padding:16px}
 }
 @media(prefers-reduced-motion:reduce){.account-drawer,.account-overlay,.hero-cta,.primary-btn{transition:none}}
+
+/* Demo cart quantity controls */
+.cart-quantity{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
+.quantity-btn{width:28px;height:28px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);font-size:18px;line-height:1;cursor:pointer}
+.quantity-btn:disabled{opacity:.4;cursor:not-allowed}
+.quantity-value{min-width:1ch;text-align:center;font-size:13px;font-weight:700}
+.cart-quantity .remove-btn{margin:0 0 0 4px}
