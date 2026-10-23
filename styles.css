@@ -172,9 +172,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 }
 @media(prefers-reduced-motion:reduce){.account-drawer,.account-overlay,.hero-cta,.primary-btn{transition:none}}
 
-/* Demo cart quantity controls */
-.cart-quantity{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
-.quantity-btn{width:28px;height:28px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--ink);font-size:18px;line-height:1;cursor:pointer}
-.quantity-btn:disabled{opacity:.4;cursor:not-allowed}
-.quantity-value{min-width:1ch;text-align:center;font-size:13px;font-weight:700}
-.cart-quantity .remove-btn{margin:0 0 0 4px}
+/* Premium blush-pink quantity controls for the demo cart */
+.cart-quantity{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:9px}
+.quantity-btn{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid #f3b7d0;border-radius:11px;background:linear-gradient(145deg,#fff7fb 0%,#ffe3ef 100%);color:#c02668;font-family:inherit;font-size:22px;font-weight:700;line-height:1;box-shadow:0 3px 9px rgba(190,36,104,.12),inset 0 1px 0 rgba(255,255,255,.9);cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+.quantity-btn:hover:not(:disabled){background:linear-gradient(145deg,#ffe7f1 0%,#ffc6df 100%);box-shadow:0 5px 13px rgba(190,36,104,.2);transform:translateY(-1px)}
+.quantity-btn:active:not(:disabled){transform:scale(.94)}
+.quantity-btn:focus-visible{outline:3px solid rgba(219,39,119,.28);outline-offset:2px}
+.quantity-btn:disabled{opacity:.42;box-shadow:none;cursor:not-allowed}
+.quantity-value{min-width:20px;text-align:center;color:#8f2455;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.cart-quantity .remove-btn{margin:0 0 0 5px;color:#c02668}
+@media(prefers-reduced-motion:reduce){.quantity-btn{transition:none}}
