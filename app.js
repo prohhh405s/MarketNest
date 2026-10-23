@@ -87,8 +87,11 @@
     $("cartCount").textContent = lines.reduce(function (s, l) { return s + l.i.qty; }, 0);
     $("cartItems").innerHTML = lines.length ? lines.map(function (l) {
       return '<div class="cart-line"><div class="cart-thumb">' + mediaHtml(l.p) + '</div><div><strong>' + H.escapeHtml(l.p.name) +
-        "</strong><small>" + l.i.qty + " × " + H.formatMoney(l.p.price) + '</small><button class="remove-btn" type="button" data-remove="' +
-        H.escapeHtml(l.p.id) + '">Remove</button></div><strong>' + H.formatMoney(l.p.price * l.i.qty) + "</strong></div>";
+        "</strong><small>" + l.i.qty + " × " + H.formatMoney(l.p.price) + '</small><div class="cart-quantity" aria-label="Quantity controls">' +
+        '<button class="quantity-btn" type="button" data-qty-minus="' + H.escapeHtml(l.p.id) + '" aria-label="Decrease quantity of ' + H.escapeHtml(l.p.name) + '"' + (l.i.qty <= 1 ? ' disabled' : '') + '>−</button>' +
+        '<span class="quantity-value" aria-live="polite">' + l.i.qty + '</span>' +
+        '<button class="quantity-btn" type="button" data-qty-plus="' + H.escapeHtml(l.p.id) + '" aria-label="Increase quantity of ' + H.escapeHtml(l.p.name) + '"' + (l.i.qty >= 99 || (l.p.stock != null && l.i.qty >= l.p.stock) ? ' disabled' : '') + '>+</button>' +
+        '<button class="remove-btn" type="button" data-remove="' + H.escapeHtml(l.p.id) + '">Remove</button></div></div><strong>' + H.formatMoney(l.p.price * l.i.qty) + "</strong></div>";
     }).join("") : '<div class="empty">Your demo cart is empty.</div>';
     $("cartTotal").textContent = H.formatMoney(lines.reduce(function (s, l) { return s + l.p.price * l.i.qty; }, 0));
   }
@@ -642,8 +645,25 @@
     if (e.target.id === "retryLoad") loadProducts();
   });
   $("cartItems").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-remove]"); if (!b) return;
-    cart = cart.filter(function (x) { return x.id !== b.dataset.remove; }); saveCart(); renderCart();
+    var plus = e.target.closest("[data-qty-plus]");
+    var minus = e.target.closest("[data-qty-minus]");
+    var remove = e.target.closest("[data-remove]");
+    if (plus || minus) {
+      var id = (plus || minus).dataset.qtyPlus || (plus || minus).dataset.qtyMinus;
+      var item = cart.find(function (x) { return x.id === id; });
+      var product = products.find(function (x) { return x.id === id; });
+      if (!item || !product) return;
+      if (plus) {
+        var maxQty = product.stock == null ? 99 : Math.min(99, product.stock);
+        if (item.qty >= maxQty) { toast("Maximum available quantity reached.", true); return; }
+        item.qty += 1;
+      } else {
+        item.qty = Math.max(1, item.qty - 1);
+      }
+      saveCart(); renderCart(); return;
+    }
+    if (!remove) return;
+    cart = cart.filter(function (x) { return x.id !== remove.dataset.remove; }); saveCart(); renderCart();
   });
   $("subnav").addEventListener("click", function (e) { var b = e.target.closest("[data-cat]"); if (b) setCategory(b.dataset.cat); });
   $("category").addEventListener("change", function () { setCategory($("category").value); });
