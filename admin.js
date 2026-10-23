@@ -5,7 +5,7 @@
   var user = null;
   var adminVerified = false;
   var currentView = 'overview';
-  var state = { products: [], orders: [], reports: [], reviews: [], users: [] };
+  var state = { products: [], orders: [], orderItems: [], reports: [], reviews: [], users: [] };
   var cfgOk = window.MARKETNEST_SUPABASE_URL && window.MARKETNEST_SUPABASE_ANON_KEY &&
     window.MARKETNEST_SUPABASE_URL.indexOf('PASTE_YOUR') === -1 &&
     window.MARKETNEST_SUPABASE_ANON_KEY.indexOf('PASTE_YOUR') === -1 &&
@@ -171,6 +171,10 @@
     await ensureAdmin();
     state.products = queries[0].error ? [] : (queries[0].data || []);
     state.orders = queries[1].error ? [] : (queries[1].data || []);
+    var orderItemsResult = await db.from('order_items')
+      .select('id,order_id,product_name,unit_price,quantity,status,seller_id')
+      .order('created_at', { ascending: false }).limit(1000);
+    state.orderItems = orderItemsResult.error ? [] : (orderItemsResult.data || []);
     state.reports = queries[2].error ? [] : (queries[2].data || []);
     state.reviews = queries[3].error ? [] : (queries[3].data || []);
     state.users = queries[4].error ? [] : (queries[4].data || []);
@@ -237,11 +241,37 @@
     var search = ($('orderSearch') && $('orderSearch').value || '').trim().toLowerCase();
     var items = state.orders.filter(function (o) { return [o.id, o.buyer_id, o.status].join(' ').toLowerCase().includes(search); });
     var rows = items.map(function (o) {
+      var lines = state.orderItems.filter(function (item) { return item.order_id === o.id; });
+      var quantity = lines.reduce(function (sum, item) { return sum + Number(item.quantity || 0); }, 0);
+      var detailRows = lines.map(function (item) {
+        return '<tr><td>' + esc(item.product_name) + '</td><td>' + esc(item.quantity) + '</td><td>' + money(item.unit_price) + '</td><td>' + money(Number(item.unit_price) * Number(item.quantity)) + '</td><td>' + statusBadge(item.status) + '</td></tr>';
+      }).join('');
+      var detailId = 'order-details-' + String(o.id).replace(/[^a-zA-Z0-9_-]/g, '');
+      var canCancel = o.status !== 'cancelled' && lines.length > 0 && !lines.some(function (item) { return item.status === 'delivered'; });
       return '<tr><td><span class="primary-cell">#' + esc(shortId(o.id)) + '</span><span class="secondary-cell">' + esc(o.id) + '</span></td>' +
         '<td>' + esc(shortId(o.buyer_id)) + '<span class="secondary-cell">Buyer ID</span></td><td>' + money(o.total_amount) + '<span class="secondary-cell">Demo order value</span></td>' +
-        '<td>' + statusBadge(o.status) + '</td><td>' + esc(date(o.created_at)) + '</td></tr>';
+        '<td>' + esc(quantity) + '<span class="secondary-cell">Total units</span></td><td>' + statusBadge(o.status) + '</td><td>' + esc(date(o.created_at)) + '</td>' +
+        '<td><div class="row-actions"><button class="action-btn" data-order-details="' + esc(o.id) + '" data-panel-id="' + esc(detailId) + '">View items</button>' +
+        (canCancel ? '<button class="action-btn danger" data-order-cancel="' + esc(o.id) + '">Cancel order</button>' : '') + '</div></td></tr>' +
+        '<tr id="' + esc(detailId) + '" class="order-detail-row" hidden><td colspan="7">' +
+        (lines.length ? '<div class="table-wrap"><table><thead><tr><th>Product</th><th>Quantity</th><th>Unit price</th><th>Line total</th><th>Item status</th></tr></thead><tbody>' + detailRows + '</tbody></table></div>' : '<div class="empty-row">No order items found.</div>') +
+        '</td></tr>';
     });
-    $('ordersTable').innerHTML = table(['Order ID', 'Buyer', 'Value', 'Status', 'Created'], rows, 'No matching orders.');
+    $('ordersTable').innerHTML = table(['Order ID', 'Buyer', 'Value', 'Quantity', 'Status', 'Created', 'Actions'], rows, 'No matching orders.');
+  }
+
+  async function cancelAdminOrder(button) {
+    await ensureAdmin();
+    var id = button.dataset.orderCancel;
+    if (!window.confirm('Cancel this entire order? All undelivered items will be cancelled and their stock returned to the listings. This cannot be undone.')) return;
+    setBusy(button, true, 'Cancelling…');
+    var result = await db.rpc('marketnest_admin_cancel_order', { p_order_id: id });
+    setBusy(button, false);
+    if (result.error || !result.data || result.data.ok !== true) {
+      throw new Error((result.error && result.error.message) || 'Order cancellation failed.');
+    }
+    notify('Order cancelled. Stock was returned for its cancelled items.');
+    await loadAll();
   }
 
   function renderReports() {
@@ -393,6 +423,20 @@
   });
   document.querySelectorAll('[data-go]').forEach(function (button) {
     button.addEventListener('click', function () { setView(button.dataset.go); });
+  });
+  $('ordersTable').addEventListener('click', function (e) {
+    var detailsButton = e.target.closest('[data-order-details]');
+    if (detailsButton) {
+      var panel = $(detailsButton.dataset.panelId);
+      if (panel) {
+        var willOpen = panel.hidden;
+        panel.hidden = !willOpen;
+        detailsButton.textContent = willOpen ? 'Hide items' : 'View items';
+      }
+      return;
+    }
+    var cancelButton = e.target.closest('[data-order-cancel]');
+    if (cancelButton) cancelAdminOrder(cancelButton).catch(function (err) { notify(err.message || 'Order cancellation failed.', true); });
   });
   $('productsTable').addEventListener('click', function (e) {
     var button = e.target.closest('[data-product-toggle]');
