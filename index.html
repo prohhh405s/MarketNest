@@ -144,6 +144,7 @@
             <label>Description (optional)<textarea name="description" maxlength="500" rows="3" placeholder="Condition, size, what is included… (max 500 characters)"></textarea></label>
             <div class="form-row">
               <label>Price (₹)<input name="price" type="number" min="1" max="1000000" step="1" inputmode="numeric" required placeholder="799"></label>
+              <label>Available stock<input name="stock" type="number" min="0" max="100000" step="1" inputmode="numeric" required value="1"><small class="small-muted">Set to 0 when the product is out of stock.</small></label>
               <label>Category<select name="category"><option>Electronics</option><option>Home</option><option>Fashion</option><option>Books</option><option>Beauty & Personal Care</option><option>Sports & Outdoors</option><option>Toys & Games</option><option>Grocery</option><option>Health & Wellness</option><option>Automotive</option><option>Pet Supplies</option><option>Garden & Outdoors</option><option>Stationery & Office</option><option>Kitchen & Dining</option></select></label>
             </div>
             <label>Emoji (shown if there is no photo)<input name="emoji" maxlength="8" value="📦" placeholder="📦"></label>
