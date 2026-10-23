@@ -690,7 +690,7 @@
 
   async function loadSellerOrders() {
     var r = await db.from('order_items')
-      .select('id,order_id,product_name,unit_price,quantity,status,orders!inner(id,buyer_id,created_at)')
+      .select('id,order_id,product_id,product_name,unit_price,quantity,status,created_at,orders!inner(id,buyer_id,created_at)')
       .eq('seller_id', user.id)
       .order('created_at', { ascending: false })
       .limit(100);
@@ -721,11 +721,24 @@
       '</strong><p>Orders needing action</p></article>';
 
     $('mnSellerOrders').innerHTML = rows.map(function (i) {
-      return '<article class="mn-item">' +
+      var orderDate = i.orders && i.orders.created_at
+        ? new Date(i.orders.created_at).toLocaleString()
+        : (i.created_at ? new Date(i.created_at).toLocaleString() : 'Date unavailable');
+      return '<article class="mn-item mn-seller-order">' +
         '<strong>' + safe(i.product_name) + '</strong>' +
         '<p>' + safe(i.quantity) + ' × ' + money(i.unit_price) +
         ' · ' + safe(i.status) + '</p>' +
         '<small>Order ' + safe(i.order_id.slice(0, 8)) + '</small>' +
+        '<button type="button" class="mn-order-details-toggle" data-order-details="' + safe(i.id) + '" aria-expanded="false">View order details</button>' +
+        '<div class="mn-order-details" data-order-details-panel="' + safe(i.id) + '" hidden>' +
+          '<p><strong>Order ID:</strong> ' + safe(i.order_id) + '</p>' +
+          '<p><strong>Order date:</strong> ' + safe(orderDate) + '</p>' +
+          '<p><strong>Your product:</strong> ' + safe(i.product_name) + '</p>' +
+          '<p><strong>Quantity ordered:</strong> ' + safe(i.quantity) + '</p>' +
+          '<p><strong>Unit price:</strong> ' + money(i.unit_price) + '</p>' +
+          '<p><strong>Your item total:</strong> ' + money(i.unit_price * i.quantity) + '</p>' +
+          '<p><strong>Item status:</strong> ' + safe(i.status) + '</p>' +
+        '</div>' +
         '<form class="mn-status-form" data-id="' + safe(i.id) + '">' +
         '<label>Update status<select name="status">' +
         ['placed', 'processing', 'shipped', 'delivered', 'cancelled']
@@ -739,38 +752,16 @@
     }).join('') || empty('No orders for your products yet.');
   }
 
-  $('mnSellerOrders').addEventListener('submit', async function (e) {
-    var f = e.target.closest('.mn-status-form');
-    if (!f) return;
-
-    e.preventDefault();
-    if (!needUser()) return;
-
-    var allowed = [
-      'placed', 'processing', 'shipped', 'delivered', 'cancelled'
-    ];
-
-    var status = f.elements.status.value;
-    if (allowed.indexOf(status) < 0) {
-      message('Invalid order status.', true);
-      return;
-    }
-
-    var r = await db.from('order_items')
-      .update({ status: status })
-      .eq('id', f.dataset.id)
-      .eq('seller_id', user.id)
-      .select('id');
-
-    if (r.error || !r.data || !r.data.length) {
-      message('Status update failed. Check seller permissions.', true);
-      return;
-    }
-
-    message('Order status updated.');
-    await loadSellerOrders();
-    await loadBuyerOrders();
-    await loadNotifications();
+  $('mnSellerOrders').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-order-details]');
+    if (!b) return;
+    var id = b.dataset.orderDetails;
+    var panel = $('mnSellerOrders').querySelector('[data-order-details-panel="' + id + '"]');
+    if (!panel) return;
+    var expanded = b.getAttribute('aria-expanded') === 'true';
+    b.setAttribute('aria-expanded', String(!expanded));
+    b.textContent = expanded ? 'View order details' : 'Hide order details';
+    panel.hidden = expanded;
   });
 
   /* Demo checkout */
@@ -831,6 +822,19 @@
 
       var cartTotal = $('cartTotal');
       if (cartTotal) cartTotal.textContent = '₹0';
+
+      // Email delivery is separate from checkout: a mail-provider failure must not undo a valid order.
+      try {
+        var mailResult = await db.functions.invoke('seller-order-email', {
+          body: { order_id: r.data }
+        });
+        if (mailResult.error) {
+          console.warn('Order was created, but seller email notification failed:', mailResult.error.message);
+          message('Order created. In-app seller notifications are available; email setup may still be needed.');
+        }
+      } catch (mailError) {
+        console.warn('Order was created, but seller email notification could not be sent:', mailError);
+      }
 
       await loadProducts();
     } catch (e) {
